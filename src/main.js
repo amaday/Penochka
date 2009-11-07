@@ -41,8 +41,7 @@ jQuery.fn.swap = function(b){
    return this;
 };
 
-/* Penochka application function variable */
-var apply_me = {}
+var isSecondary = false
 
 /* */
 function showReplyForm(id, cite, parent, hideHide, needHr) {
@@ -103,7 +102,6 @@ function cacheThread(idurl, cb, errHandler) {
       url,
       function(e) {
          e.find(iom.thread.reflink).attr('href', url)
-         apply_me(e, true)
          var ue = e.find(iom.tid)
          var id = ue.attr('id')
          ue.appendTo('#cache')
@@ -152,10 +150,14 @@ function swapAttr(obj, a1, a2) {
    obj.attr(a2, t)
 }
 
-function refold(id) {
-   var subj = $('#' + id + ' ' + iom.post.image)
+function refold(idobj) {
+   if (typeof idobj == 'string') {
+      var subj = $('#' + id + ' ' + iom.post.image)
+   } else {
+      var subj = idobj
+   }
    swapAttr(subj, 'src', 'altsrc')
-   swapAttr(subj, 'style', 'altstyle')   
+   swapAttr(subj, 'style', 'altstyle')
    if (db.cfg.fitImgs) {
       subj.css('max-width', $(window).width() - 64 + 'px')
    }
@@ -169,24 +171,24 @@ function apply_isense(a, ff) {
    }
    a.hover(
       function(evt) { // over
-	 var xBound = document.body.clientWidth
-	 var x = evt.pageX + 10
-	 if ((xBound - x) < db.cfg.prvwMinWidth)
-	    x = xBound - db.cfg.prvwMinWidth - db.cfg.prvwMinDelta
+         var xBound = document.body.clientWidth
+         var x = evt.pageX + 10
+         if ((xBound - x) < db.cfg.prvwMinWidth)
+            x = xBound - db.cfg.prvwMinWidth - db.cfg.prvwMinDelta
          intelli(
             x,
             evt.pageY+10,
             a.attr('refid'),
             a.attr('refurl'),
-	    false, ff
+            false, ff
          )
       },
       function(evt) { // out
-	 if($(evt.target).closest('.penISense').length == 0) {
+         if($(evt.target).closest('.penISense').length == 0) {
             outelli(a.attr('refid'), true)
-	 } else {
-	    outelli(a.attr('refid'), false)
-	 }
+         } else {
+            outelli(a.attr('refid'), false)
+         }
       }
    )
 }
@@ -202,30 +204,30 @@ function intelli(x, y, id, url, threadCached, ff) {
          var obj = {}
          if($('#'+id).length == 0) {
             if (!threadCached && url) {
-               cacheThread(url, 
-			   function () { intelli(x, y, id, null, true) }, 
-			   function () { intelli(x, y, id, null, true, ff) })
-	       obj = $.ui.preview(
+               cacheThread(url,
+                           function () { intelli(x, y, id, null, true) },
+                           function () { intelli(x, y, id, null, true, ff) })
+               obj = $.ui.preview(
                   $('<div>' + i18n.thrdLoading + '</div>'),
                   x, y)
             } else {
                obj = $.ui.preview(
                   $('<div>' + i18n.previewError + '</div>'),
                   x, y)
-	       if (ff)
-		  ff()
+               if (ff)
+                  ff()
             }
          } else {
             obj = $.ui.preview(id, x, y)
          }
          obj.attr('id','is'+id);
-	 obj.addClass('penISense')
+         obj.addClass('penISense')
          obj.hover(
             function(evt) {
                clearTimeout(ist)
             },
             function(evt) {
-	       outelli(id, true)
+               outelli(id, true)
             })
          obj.css('z-index', z++);
          $('body').prepend(obj);
@@ -237,11 +239,11 @@ function outelli(id, wholeThread) {
    clearTimeout(ist)
    ist = setTimeout(
       function () {
-	 if(wholeThread) {
-	    $('.penISense').remove()
-	 } else {
-	    $('#is'+id).remove()
-	 }
+         if(wholeThread) {
+            $('.penISense').remove()
+         } else {
+            $('#is'+id).remove()
+         }
       },
       db.cfg.iSenseDn)
 }
@@ -305,23 +307,23 @@ function toggleBookmarks() {
       var div = $('<span id="penBmsIn">')
       for (i in db.bookmarks) {
          div.append($.ui.bookmark(
-	    i, db.bookmarks[i].cite,  
-	    db.bookmarks[i].timestamp,
-	    function (evt) {
+            i, db.bookmarks[i].cite,
+            db.bookmarks[i].timestamp,
+            function (evt) {
                var subj = $(evt.target).parents('div:first')
                delete db.bookmarks[subj.find('a.penBmLink').attr('href')]
                db.saveState()
                subj.remove()
-	    }))
+            }))
       }
       div.find('a.penBmLink').each(
-	 function () {
-	    var subj = $(this)
-	    apply_isense(subj, function () {
-	       if (db.cfg.bmAutoDel)
-		  subj.closest('div').find('a:first').click()
-	    })
-	 })
+         function () {
+            var subj = $(this)
+            apply_isense(subj, function () {
+               if (db.cfg.bmAutoDel)
+                  subj.closest('div').find('a:first').click()
+            })
+         })
       return div
    }
    if ($('#penBms').length == 0) {
@@ -424,8 +426,8 @@ function toggleSettings () {
             if (db.children[items[id]]) {
                setStr += slist(db.children[items[id]], level + 1)
             }
-	    if (level == 2) 
-	       odd = !odd
+            if (level == 2)
+               odd = !odd
             o++
          }
          return setStr
@@ -454,30 +456,30 @@ function toggleSettings () {
          })
       genControls.find('input').keypress(
          function () {
-	    var searchStr = $(this).val()
-	    if(searchStr.length > 2) {
-	       var re = new RegExp(searchStr,'i')
-	       $('.penSetting').hide()
-	       $('.penSetting').each(
-		  function () {
-		     var subj = $(this)
-		     if (subj.text().search(re) != -1) {
-			if (subj.hasClass('penLevel2')) {
-			   subj.show()
-			   subj.prevAll('.penLevel1:first').show()
-			} else if (subj.hasClass('penLevel3')) {
-			   subj.show()
-			   subj.prevAll('.penLevel2:first').show()
-			   subj.prevAll('.penLevel1:first').show()
-			}
-		     }
-		  })
-	    } else if (searchStr.length < 2) {
-	       $('.penSetting').each(
-		  function () {
-		     $(this).show()
-		  })
-	    }
+            var searchStr = $(this).val()
+            if(searchStr.length > 2) {
+               var re = new RegExp(searchStr,'i')
+               $('.penSetting').hide()
+               $('.penSetting').each(
+                  function () {
+                     var subj = $(this)
+                     if (subj.text().search(re) != -1) {
+                        if (subj.hasClass('penLevel2')) {
+                           subj.show()
+                           subj.prevAll('.penLevel1:first').show()
+                        } else if (subj.hasClass('penLevel3')) {
+                           subj.show()
+                           subj.prevAll('.penLevel2:first').show()
+                           subj.prevAll('.penLevel1:first').show()
+                        }
+                     }
+                  })
+            } else if (searchStr.length < 2) {
+               $('.penSetting').each(
+                  function () {
+                     $(this).show()
+                  })
+            }
          }
       )
       genControls.append(generated)
@@ -509,8 +511,8 @@ function toggleSettings () {
              function () {
                 saveSettings()
                 if (!db.saveState()) {
-		   alert('2')
-		}
+                   alert('2')
+                }
                 location.reload(true) }],
             [i18n.close,
              function () { $('#penSettings').hide() }]
@@ -580,7 +582,7 @@ function setupEnv (db, env) {
          var subj = $(this)
          var t = $(this).parents(iom.tid)
          var tid = t.attr('id')
-         if (!toggleBookmark(tid)) 
+         if (!toggleBookmark(tid))
             toggleBookmark(tid)
       }
       if (db.cfg.useAJAX) {
@@ -590,8 +592,8 @@ function setupEnv (db, env) {
             success:
             function(responseText, statusText) {
                if (responseText.search(/delform/) == -1) {
-		  var errResult = 'Ошибка'
-		  subj.find(iom.form.status).text(errResult)
+                  var errResult = 'Ошибка'
+                  subj.find(iom.form.status).text(errResult)
                   errResult = responseText.match(/<h1.*?>(.*?)<br/)[1]
                   subj.find(iom.form.status).text(errResult)
                } else {
@@ -602,7 +604,7 @@ function setupEnv (db, env) {
          return false
       }
    })
-   
+
    if(env.find(iom.form.status).length == 0) {
       env.find(iom.form.email).after('<i></i>')
    }
@@ -610,24 +612,24 @@ function setupEnv (db, env) {
    var img = env.find(iom.form.turimage)
    if (img.length > 0) {
       if (db.cfg.tripleTt) {
-	 img.css('padding-left', '3px').
+         img.css('padding-left', '3px').
             after(img.clone(true)).click().
             after(img.clone(true)).click()
       }
    } else {
       var genCaptcha = function (key, dummy) {
-	 return '<img alt="Update captcha" src="/b/captcha.pl?key=' + key + '&amp;dummy=' + dummy + '" onclick="update_captcha(this)" style="padding-left: 3px" />'
+         return '<img alt="Update captcha" src="/b/captcha.pl?key=' + key + '&amp;dummy=' + dummy + '" onclick="update_captcha(this)" style="padding-left: 3px" />'
       }
       var tNum = $(iom.form.parent).val()
       var key = 'mainpage'
-      if (tNum) 
-	 key = 'res' + tNum
+      if (tNum)
+         key = 'res' + tNum
       if (db.cfg.tripleTt) {
-	 ttStr  = genCaptcha(key, 1) + 
-	    genCaptcha(key, 2) + 
-	    genCaptcha(key, 3)
+         ttStr  = genCaptcha(key, 1) +
+            genCaptcha(key, 2) +
+            genCaptcha(key, 3)
       } else {
-	 ttStr = genCaptcha(key, 1)
+         ttStr = genCaptcha(key, 1)
       }
       env.find(iom.form.turdiv).html(ttStr)
       env.find(iom.form.turtest).removeAttr('onfocus')
@@ -681,8 +683,8 @@ function setupEnv (db, env) {
 
    if (db.cfg.taResize) {
       env.find(iom.form.message).
-	 attr('rows', db.cfg.taHeight).
-	 attr('cols', db.cfg.taWidth)
+         attr('rows', db.cfg.taHeight).
+         attr('cols', db.cfg.taWidth)
    }
 
    if (db.cfg.sageBtn) {
@@ -769,7 +771,7 @@ function setupEnv (db, env) {
    /* Event-driven attempt tiny inclusion.
       Seriously, this handler needs to be much
       more more (fucking english i've forgot it). */
-   $(env).click(
+   env.click(
       function (e) {
          var subj = $(e.target)
          if (e.which == 1) {
@@ -793,35 +795,38 @@ function setupEnv (db, env) {
                })
                return false
             } else if (subj.attr('altsrc') && db.cfg.imgsUnfold) {
-               refold(subj.findc(iom.pid).attr('id'))
+               refold(subj)
                return false
-            }
+            } else if (subj.parent().is(iom.post.ref)) {
+	       alert('d')
+	       showReplyForm('', subj.text())
+	       return false
+	    }
          }
       })
-}
 
-apply_me = function (messages, isSecondary) {
-   var isInThread = $(iom.form.parent).length > 0 ? true : false
-
-   messages.find(iom.tid).each(
-      function () {
-         var subj = $(this)
-         var tid = subj.attr('id')
-         var turl = subj.find(iom.thread.reflink).attr('href').split('#')[0]
+   env.bind(
+      'thread' ,
+      function (ev, thrd) {
+	 thrd = $(thrd)
+         var tid = thrd.attr('id')
+	 try {
+         var turl = thrd.find(iom.thread.reflink).attr('href').split('#')[0]
+	 } catch (err) { return }
          var tmenu = []
-         var trm = subj.find(iom.thread.ref).next('a')
+         var trm = thrd.find(iom.thread.ref).next('a')
          if (trm.length == 0) {
-            subj.find(iom.thread.ref).after('&nbsp; [<a/>]')
-            trm = subj.find(iom.thread.ref).next('a')
+            thrd.find(iom.thread.ref).after('&nbsp; [<a/>]')
+            trm = thrd.find(iom.thread.ref).next('a')
          }
          if (db.cfg.thrdHide)
             tmenu.push([
                i18n.hide,
-               function () { chktizer(subj, tid, true, true); toggleVisible(tid) }])
-         if (db.cfg.thrdUnfold && (subj.find(iom.thread.moar).length | isSecondary))
+               function () { chktizer(thrd, tid, true, true); toggleVisible(tid) }])
+         if (db.cfg.thrdUnfold && (thrd.find(iom.thread.moar).length | isSecondary))
             tmenu.push([
                isSecondary ? i18n.fold : i18n.unfold,
-               function () { toggleThread(tid, !isSecondary) }])
+               function () { toggleThread(tid, isSecondary) }])
          if (db.cfg.bmarks)
             tmenu.push([
                db.bookmarks[turl] ? i18n.fromBms : i18n.toBms,
@@ -831,7 +836,7 @@ apply_me = function (messages, isSecondary) {
                i18n.reply, turl])
          trm.replaceWith($.ui.multiLink(tmenu, '', ''))
          if($(iom.form.parent).length == 0) {
-            var moar = subj.find(iom.thread.moar).clone()
+            var moar = thrd.find(iom.thread.moar).clone()
             if (moar.length == 0) {
                moar = $('<span class="omittedposts"></span>')
             }
@@ -839,93 +844,76 @@ apply_me = function (messages, isSecondary) {
                i18n.replyThat,
                function () { showReplyForm(tid) }]
             moar.append($.ui.multiLink(tmenu))
-            subj.find(iom.thread.eotNotOp).after(moar)
+            thrd.find(iom.thread.eotNotOp).after(moar)
          }
-         /** Posts **/
-         subj.find(iom.pid).each(
-            function () {
-               var subj = $(this)
-               var pid = subj.attr('id')
-               if (db.cfg.pstsHide) {
-                  subj.find(iom.post.ref).append($.ui.multiLink([
-                     [i18n.hidePost,
-                      function () { chktizer(subj, pid, false); toggleVisible(pid); return false; }]
-                  ], ' ', ''))
-               }
-               /* Censore */
-               if(db.cfg.censTitle != '' || db.cfg.censUser != '' || db.cfg.censMail != '' || db.cfg.censMsg != '' || db.cfg.censTotal != '') {
-                  var censf = false;
-                  if (db.cfg.censTitle &&
-                      subj.find(iom.post.title).text().search(db.cfg.censTitle) != -1) {
-                     censf = true
-                  }
-                  if (db.cfg.censUser &&
-                      subj.find(iom.post.poster).text().search(db.cfg.censTitle) != -1) {
-                     censf = true
-                  }
-                  if (db.cfg.censMail &&
-                      subj.find(iom.post.email).length > 0 && subj.find(iom.post.email).attr('href').search(db.cfg.censMail) != -1) {
-                     censf = true
-                  }
-                  if (db.cfg.censMsg &&
-                      subj.find(iom.post.message).text().search(db.cfg.censMsg) != -1) {
-                     censf = true
-                  }
-                  if (db.cfg.censTotal &&
-                      subj.text().search(db.cfg.censTotal) != -1) {
-                     censf = true
-                  }
-                  if(censf) {
-                     db.filtered[pid]=1
-                  }
-               }
-               if (db.cfg.fwdRefs && $.references[pid]) {
-                  var refs =
-                     function () {
-                        var r = [];
-                        for (j in $.references[pid]) {
-                           r.push($.ui.anchor($.references[pid][j]))
-                        }
-                        return $.ui.refs(r.join(', '))
-                     }
-                  subj.find(iom.post.message).before(refs())
-               }
-               if (db.cfg.fastReply) {
-                  subj.find(iom.post.reflink).click(
-                     function () {
-                        showReplyForm(tid, '>>'+pid.replace('p',''));
-                        return false; }
-                  )}
-            })
+      })
 
-      }
-   )
+   env.bind(
+      'post',
+      function (ev, pst) {
+	 pst = $(pst)
+         var pid = pst.attr('id')
+         var tid = pst.attr('tid')
+         
 
-   db.cfg.iSense &&
-      messages.find(iom.anchors).each(
+         if (db.cfg.fwdRefs && $.references[pid]) {
+            var refs =
+               function () {
+                  var r = [];
+                  for (j in $.references[pid]) {
+                     r.push($.ui.anchor($.references[pid][j]))
+                  }
+                  return $.ui.refs(r.join(', '))
+               }
+            pst.find(iom.post.message).before(refs())
+         }
+         if (db.cfg.fastReply) {
+            pst.find(iom.post.reflink).click(
+               function () {
+                  
+                  return false; }
+            )}
+      })
+
+   env.bind(
+      'reflink',
+      function (ev, rlink) {
+	 rlink = $(rlink)
+	 if (db.cfg.pstsHide) {
+            rlink.append($.ui.multiLink([
+               [i18n.hidePost,
+                function () { 
+		   var post = rlink.closest('.penPost') 
+		   chktizer(post, post.attr('id'), false) 
+		   toggleVisible(post.attr('id')) 
+		   return false; 
+		}]], ' ', ''))
+         }
+      })
+
+   /* db.cfg.iSense &&
+      env.find(iom.anchors).each(
          function () { apply_isense($(this)) }
-      )
+      ) */
 
-   for(var objId in db.hidden) {
-      /* It's an low level alternative of toggle method
-          * TODO Rewrite toggle for suitable usage in this
-          * place (may be impossible). */
+  /* for(var objId in db.hidden) {
       if (objId) {
          var subj = messages.find('#'+objId)
-	 var isThread = objId.search(/t/) == -1 ? false : true
-	 if (db.cfg.thrdInThrdLeave && isInThread && isThread )
-	    continue
+         var isThread = objId.search(/t/) == -1 ? false : true
+         if (db.cfg.thrdInThrdLeave && isInThread && isThread )
+            continue
          subj.css('display', 'none')
          chktizer(subj, objId, isThread)
          messages.find('#tiz'+objId).css('display','block')
       }
-   }
-   for (var objId in db.filtered) {
+   } */
+
+   /* for (var objId in db.filtered) {
       var subj = messages.find('#'+objId)
       subj.css('display', 'none')
       chktizer(subj, objId, false, false, true)
       messages.find('#tiz'+objId).css('display','block')
-   }
+   } */
 }
 
 function postSetup () {
@@ -939,8 +927,9 @@ function postSetup () {
       $('p.footer a:last').
          after(' + <a href="http://github.com/anonymous32767/Penochka/" title="' + scope.timer.cache + ' total: ' + scope.timer.total + 'ms">penochka UnStAbLe</a>')
    },0);
+   isSecondary = true
 }
 
 db.loadState(function () {
-   $(document).ok(db, setupEnv, apply_me, postSetup)
+   $(document).ok(db, setupEnv, postSetup)
 })

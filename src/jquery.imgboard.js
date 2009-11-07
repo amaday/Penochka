@@ -138,11 +138,48 @@ iom = {
    }
 }
 
-function dvach (onload, events) {
-   function parse (cloned) {
+function dvach (onload, env) {
+   function parse (messages) {
+      var cpost = null
+      var tid = ''
+      var pid = ''
+      messages.walk(function (e, lvl) {
+	 var subj = $(e)
+	 if (subj.is('a')) {
+	    if (subj.attr('name') ) {
+	       if (lvl == 0) {
+		  tid = 't' + subj.attr('name')
+	       } else if (cpost) {
+		  pid = 'p' + subj.attr('name')
+		  cpost.attr('id', pid)
+		  cpost.attr('tid', tid)
+		  cpost.addClass('penPost')
+		  //env.trigger('post', cpost)
+	       }
+	    }
+	 } else if (subj.is('table')) {
+	    cpost = subj
+	 } else if (subj.is('span')) {
+	    if (subj.is('span.reflink'))
+	       //env.trigger('reflink', subj)
+	 } else if (subj.is('img')) {
+	    var altsrc = subj.parent().attr('href')
+            var w = subj.attr('width')
+            var h = subj.attr('height')
+            subj.attr('altsrc', altsrc)
+            subj.attr('style','height: '+h+'px; width:'+w+'px;')
+            subj.attr('altstyle', iom.unfoldImgCss+'min-height: '+h+'px; min-width: '+w+'px;')
+            subj.removeAttr('height')
+            subj.removeAttr('width')
+	    //env.trigger('image', subj)
+	 }
+      }, true)
+   }
+   /* function parse (cloned) {
       var opPost = $('<span></span>');
       var currThread = $('<span></span>');
-      cloned.contents().each(
+      var tid = ''
+      cloned.reverse().contents().each(
          function () {
             var subj = $(this)
             if (subj.is('table')) {
@@ -150,16 +187,20 @@ function dvach (onload, events) {
                   currThread.append(opPost);
                   opPost = false;
                }
-               subj.attr('id', 'p' + subj.find('a[name]').attr('name'));
-               subj.addClass('penPost');
+               subj.attr('id', 'p' + subj.find('a[name]').attr('name')).
+		  addClass('penPost').
+		  attr('tid', tid)
+	       env.trigger('post', subj)
             }
             if(opPost) {
                opPost.append(subj);
                if(subj.is('a') && subj.attr('name')) {
-                  currThread.attr('id', 't'+subj.attr('name'));
+		  tid = 't'+subj.attr('name')
+                  currThread.attr('id', tid);
                   currThread.addClass('penThread');
                   opPost.attr('id', 'p'+subj.attr('name'));
                   opPost.addClass('penPost');
+		  opPost.attr('tid', tid);
                }
             } else if (currThread) {
                currThread.append(this);
@@ -169,23 +210,24 @@ function dvach (onload, events) {
                   currThread.append(opPost);
                }
                cloned.append(currThread);
+	       //env.trigger('post', opPost)
+	       env.trigger('thread', currThread)
                opPost = $('<span/>');
                currThread = $('<span/>');
             }
          }
       );
       cloned.append(currThread);
-   }
+   } */
 
    function process(cloned) {
-      cloned.find(iom.anchors).each(
+      /* cloned.find(iom.anchors).each(
          function () {
             var subj = $(this)
             var a = subj.attr('href').split('#')
             var refurl = a[0]
             var refid = a[1]
             if (!refid) {
-               // Op post workaround
                refid = subj.attr('href').split('.')[0].split('/').reverse()[0]
             }
             var pid = 'p' + refid
@@ -196,24 +238,7 @@ function dvach (onload, events) {
                $.references[pid] = []
             }
             $.references[pid][spid]=spid
-         })
-      cloned.find(iom.thread.moar).each(
-         function () {
-            $(this).html($(this).text().split('.')[0]+'. ')
-         })
-      cloned.find(iom.post.image).each(
-         function () {
-            var subj = $(this)
-            var altsrc = subj.a().attr('href')
-            var w = subj.attr('width')
-            var h = subj.attr('height')
-            subj.attr('altsrc', altsrc)
-            subj.attr('style','height: '+h+'px; width:'+w+'px;')
-            subj.attr('altstyle', iom.unfoldImgCss+'min-height: '+h+'px; min-width: '+w+'px;')
-            subj.removeAttr('height')
-            subj.removeAttr('width')
-         }
-      )
+         }) */
    }
 
    jQuery.fn.extend({
@@ -372,17 +397,16 @@ function dvach (onload, events) {
       }
    }
 
-   return function (obj, f, aft) {
+   return function (obj, aft) {
       onload()
 
       var threadsRaw = obj.find('#delform');
-      var cloned = threadsRaw.clone()
+      var cloned = threadsRaw /* .clone() */
 
       parse(cloned);
       process(cloned);
       $('body').append('<div id="cache" style="display:none" />')
-      f(cloned)
-      threadsRaw.replaceWith(cloned);
+      /* threadsRaw.replaceWith(cloned); */
       aft()
    };
 }/* end of 2ch */
@@ -391,21 +415,23 @@ jQuery.fn.extend({
    a: function () {
       return $(this).parents('a:first');
    },
-   ok: function(db, env, msg, aft) {
+   ok: function(db, env, aft) {
       /* Защита от повторного вызова скрипта. */
       if($('#cache').length > 0)
 	 return
       
       try {
          document = unsafeWindow.document
-         var converge = dvach(function() { env(db, $(unsafeWindow.document)) })
-         converge($(unsafeWindow.document), msg, aft)
+         var converge = dvach(function() { env(db, $(unsafeWindow.document)) }, subj)
+         converge($(unsafeWindow.document), aft)
       } catch (err) {
          this.ready(
             function () {
+	       scope.timer.diff('page load');
+	       scope.timer.init();
                var subj = $(this)
-               var converge = dvach(function() { env(db, subj) })
-               converge(subj, msg, aft)
+               var converge = dvach(function() { env(db, subj) }, subj)
+               converge(subj, aft)
             }
          )
       }
