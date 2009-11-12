@@ -31,7 +31,7 @@
 @if not exist src goto errmsg
 @if exist penochka%ext% del penochka%ext%
 cd src
-@ type header.js css.js i18n.js base64.js jquery.min.js jquery.form.js storage.js jquery.imgboard.js settings.js main.js >> penochka%ext%
+@ type header.js css.js i18n.js jquery.min.js jquery.form.js jquery.imgboard.js core.js storage.js main.js modules/imagesUnfolding.js >> penochka%ext%
 cd ..
 move src\penochka%ext% penochka%ext%
 @cls

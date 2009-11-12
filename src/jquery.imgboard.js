@@ -29,49 +29,6 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-jQuery.fn.reverse = [].reverse
-jQuery.fn.sort = [].sort
-
-/* */
-/*@ http://www.mail-archive.com/jquery-en@googlegroups.com/msg16487.html */
-function addStyle( css ) {
-   var style = document.createElement( 'style' );
-   style.type = 'text/css';
-   var head = document.getElementsByTagName('head')[0];
-   head.appendChild( style );
-   if( style.styleSheet )  // IE
-      style.styleSheet.cssText = css;
-   else  // other browsers
-      style.appendChild( document.createTextNode(css) );
-   return style;
-}
-
-/* Some useful stuff */
-jQuery.fn.extend({
-   /* Finds element parent which has class passed in argument. */
-   findc:
-   function(cls) {
-      return $(this).is(cls) ? $(this) : $(this).parents(cls)
-   }
-})
-
-/* */
-/*
-  For localization to your language simply replace this table.
- */
-var xlatb =
-   {й: 'q', ц: 'w', у: 'e', к: 'r', е: 't', н: 'y', г: 'u',
-    ш: 'i', щ: 'o', з: 'p', ф: 'a', ы: 's', в: 'd', а: 'f',
-    п: 'g', р: 'h', о: 'j', л: 'k', д: 'l', я: 'z', ч: 'x',
-    с: 'c', м: 'v', и: 'b', т: 'n', ь: 'm'
-   }
-
-var blatx =
-   {q: 'й', w: 'ц', e: 'у', r: 'к', t: 'е', y: 'н', u: 'г',
-    i: 'ш', o: 'щ', p: 'з', '[': 'х', ']': 'ъ', a: 'ф',
-    s: 'ы', d: 'в', f: 'а', g: 'п', h: 'р', j: 'о', k: 'л',
-    l: 'д', ';': 'ж', '\'': 'э', z: 'я', x: 'ч', c: 'с',
-    v: 'м', b: 'и', n: 'т', m: 'ь', ',': 'б', '.': 'ю'}
 
 /* State machine here - walks through siblings and add it to
    specific IOM element.
@@ -138,27 +95,36 @@ iom = {
    }
 }
 
-function dvach (onload, events) {
+function dvach () {
    function parse (cloned) {
-      var opPost = $('<span></span>');
-      var currThread = $('<span></span>');
+      var opPost = $('<span/>');
+      var currThread = $('<span/>');
+      var tid = '';
       cloned.contents().each(
          function () {
             var subj = $(this)
             if (subj.is('table')) {
                if (opPost) {
                   currThread.append(opPost);
+		  $.p5a.trigger('msg', opPost)
                   opPost = false;
                }
-               subj.attr('id', 'p' + subj.find('a[name]').attr('name'));
+               subj.
+		  attr('id', 'p' + subj.find('a[name]').attr('name')).
+		  attr('tid', tid);
                subj.addClass('penPost');
+	       $.p5a.trigger('msg', subj)
             }
             if(opPost) {
                opPost.append(subj);
                if(subj.is('a') && subj.attr('name')) {
-                  currThread.attr('id', 't'+subj.attr('name'));
+		  var ptid = subj.attr('name')
+		  tid = 't' + ptid
+                  currThread.attr('id', tid);
                   currThread.addClass('penThread');
-                  opPost.attr('id', 'p'+subj.attr('name'));
+                  opPost.
+		     attr('id', 'p'+ptid).
+		     attr('tid', tid)
                   opPost.addClass('penPost');
                }
             } else if (currThread) {
@@ -166,62 +132,32 @@ function dvach (onload, events) {
             }
             if ($(this).is('hr')) {
                if (opPost) {
-                  currThread.append(opPost);
+		  $.p5a.trigger('msg', opPost)
+                  currThread.append(opPost)
                }
-               cloned.append(currThread);
+	       $.p5a.trigger('thread', currThread)               
+	       cloned.append(currThread)
                opPost = $('<span/>');
                currThread = $('<span/>');
             }
          }
       );
-      cloned.append(currThread);
-   }
-
-   function process(cloned) {
-      if (!$.references)
-	 $.references = {}
-      cloned.find(iom.anchors).each(
-         function () {
-            var subj = $(this)
-            var a = subj.attr('href').split('#')
-            var refurl = a[0]
-            var refid = a[1]
-            if (!refid) {
-               // Op post workaround
-               refid = subj.attr('href').split('.')[0].split('/').reverse()[0]
-            }
-            var pid = 'p' + refid
-            var spid = subj.findc(iom.pid).attr('id')
-            subj.attr('refid', pid)
-            subj.attr('refurl', refurl)
-	    try {
-               $.references[pid][spid] = spid
-	    } catch (err) {
-	       $.references[pid] = {}
-	       $.references[pid][spid] = spid
-	    }
-         })
+      cloned.append(currThread); 
+      /* this is delform itself, so comment this */
+      /* $.p5a.house.trigger('thread', currThread) */
       cloned.find(iom.thread.moar).each(
          function () {
             $(this).html($(this).text().split('.')[0]+'. ')
          })
-      cloned.find(iom.post.image).each(
-         function () {
-            var subj = $(this)
-            var altsrc = subj.a().attr('href')
-            var w = subj.attr('width')
-            var h = subj.attr('height')
-            subj.attr('altsrc', altsrc)
-            subj.attr('style','height: '+h+'px; width:'+w+'px;')
-            subj.attr('altstyle', iom.unfoldImgCss+'min-height: '+h+'px; min-width: '+w+'px;')
-            subj.removeAttr('height')
-            subj.removeAttr('width')
-         })
-      /* Cannot delete posts while in thread bug (#71) workaround  */
+      /* Workaround bug #71 (Cannot delete posts while in thread)  */
       cloned.submit(
 	 function () {
 	    cloned.find(iom.tid+' form').remove()
 	 })
+   }
+
+   function process(cloned) {
+      
    }
 
    jQuery.fn.extend({
@@ -234,7 +170,7 @@ function dvach (onload, events) {
       function (tid) {
          var tnum = tid.replace('t','')
          var form = $(this)
-         var lnum = $('#' + tid + ' ' + iom.thread.eot).findc(iom.pid).attr('id').replace('p','')
+         var lnum = $('#' + tid + ' ' + iom.thread.eot).closest(iom.pid).attr('id').replace('p','')
          /* Reserved: manually switch to thread gb2
 
          form.find('input[name=gb2][value=board]').removeAttr('checked')
@@ -258,7 +194,7 @@ function dvach (onload, events) {
       function (url, f, ef) {
          var e = $('<span/>')
          e.load(
-            'http://'+location.host + url + ' #delform',
+            'http://'+ $.p5a.domain  +  url + ' #delform',
             {},
             function (a,b,c) {
                if (b != 'success') {
@@ -269,22 +205,19 @@ function dvach (onload, events) {
                var cloned = $(e).find('#delform')
                parse(cloned)
                process(cloned)
-               f(cloned)
+	       f(cloned)
             })
       }
-   });
+   })
 
    jQuery.extend({
-      turl: function (tid) {
-         return '/' + db.global.board + '/res/'+tid.replace(/\D/g, '')+'.html'
+      tidurl: function (tid) {
+         return '/' + $.p5a.board + '/res/'+tid.replace(/\D/g, '')+'.html'
       },
       urltid: function (url) {
 	 return 't' + url.replace(/.*\/(\d+)\.html/,'$1')
       }
-   });
-
-   jQuery.xlatb = xlatb;
-   jQuery.bookmarks = [];
+   })
 
    jQuery.ui = {
       anchor :
@@ -304,7 +237,7 @@ function dvach (onload, events) {
             var obj = idobj
          }
 	 obj.find('a[name]').removeAttr('name')
-         obj.addClass(db.cfg.hlPrevs ? 'highlight' : 'reply')
+         obj.addClass($.p5a.cfg.hlPrevs ? 'highlight' : 'reply')
          obj.attr('style','position:absolute; top:' + y +
                   'px; left:' + x + 'px;display:block;')
          return obj
@@ -379,46 +312,13 @@ function dvach (onload, events) {
       }
    }
 
-   return function (obj, f, aft) {
-      onload()
-
-      var threadsRaw = obj.find('#delform');
+   return function () {
+      var threadsRaw = $.p5a.house.find('#delform');
       var cloned = threadsRaw.clone()
-
-      parse(cloned);
-      process(cloned);
+      parse(cloned)
+      process(cloned)
       $('body').append('<div id="cache" style="display:none" />')
-      f(cloned)
       threadsRaw.replaceWith(cloned);
-      aft()
-   };
-}/* end of 2ch */
-
-jQuery.fn.extend({
-   a: function () {
-      return $(this).parents('a:first');
-   },
-   ok: function(db, env, msg, aft) {
-      /* Защита от повторного вызова скрипта. */
-      if($('#cache').length > 0)
-	 return
-      
-      try {
-         document = unsafeWindow.document
-	 scope.timer.diff('page load');
-	 scope.timer.init();
-         converge = dvach(function() { env(db, $(unsafeWindow.document)) })
-         converge($(unsafeWindow.document), msg, aft)
-      } catch (err) {
-         this.ready(
-            function () {
-	       scope.timer.diff('page load');
-	       scope.timer.init();
-               var subj = $(this)
-               converge = dvach(function() { env(db, subj) })
-               converge(subj, msg, aft)
-            }
-         )
-      }
    }
-})
+}
+

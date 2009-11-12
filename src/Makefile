@@ -1,5 +1,5 @@
-source = header.js css.js i18n.js base64.js jquery.min.js jquery.form.js\
-	 storage.js jquery.imgboard.js settings.js main.js
+source = header.js css.js i18n.js jquery.min.js jquery.form.js\
+	 jquery.imgboard.js core.js storage.js main.js modules\/imagesUnfolding.js
 
 mkbat = make.bat.tmp
 

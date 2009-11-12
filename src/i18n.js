@@ -90,4 +90,4 @@ var i18nRus = {
    btns: {}
 }
 
-i18n = i18nRus
+i18n = i18nRus;
