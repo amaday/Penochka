@@ -31,6 +31,7 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+<<<<<<< HEAD:src/main.js
 jQuery.fn.swap = function(b){
    b = jQuery(b)[0];
    var a = this[0];
@@ -43,6 +44,8 @@ jQuery.fn.swap = function(b){
 
 var isSecondary = false
 
+=======
+>>>>>>> master:src/main.js
 /* */
 function showReplyForm(id, cite, parent, hideHide, needHr) {
    if(!id)
@@ -101,6 +104,10 @@ function cacheThread(idurl, cb, errHandler) {
    $.fn.ajaxThread(
       url,
       function(e) {
+         /* Chrome extension specific javascript behaviour
+            workaround */
+         dvach(function () {})
+         /* End of workaround */
          e.find(iom.thread.reflink).attr('href', url)
          var ue = e.find(iom.tid)
          var id = ue.attr('id')
@@ -135,12 +142,12 @@ function toggleThread(id, useAjax) {
 function toggleVisible(id) {
    $('#'+id).toggle()
    $('#tiz'+id).toggle()
-   if (db.hidden[id]) {
-      delete db.hidden[id]
+   if ($.p5a.hidden[id]) {
+      delete $.p5a.hidden[id]
    } else {
-      db.hidden[id] = 1;
+      $.p5a.hidden[id] = 1;
    }
-   db.saveState()
+   $.p5a.saveState()
 }
 
 /* */
@@ -158,7 +165,11 @@ function refold(idobj) {
    }
    swapAttr(subj, 'src', 'altsrc')
    swapAttr(subj, 'style', 'altstyle')
+<<<<<<< HEAD:src/main.js
    if (db.cfg.fitImgs) {
+=======
+   if ($.p5a.cfg.fitImgs) {
+>>>>>>> master:src/main.js
       subj.css('max-width', $(window).width() - 64 + 'px')
    }
    return false
@@ -166,15 +177,20 @@ function refold(idobj) {
 
 /* */
 function apply_isense(a, ff) {
-   if(!db.cfg.iSense) {
+   if(!$.p5a.cfg.iSense) {
       return
    }
    a.hover(
       function(evt) { // over
          var xBound = document.body.clientWidth
          var x = evt.pageX + 10
+<<<<<<< HEAD:src/main.js
          if ((xBound - x) < db.cfg.prvwMinWidth)
             x = xBound - db.cfg.prvwMinWidth - db.cfg.prvwMinDelta
+=======
+         if ((xBound - x) < $.p5a.cfg.prvwMinWidth)
+            x = xBound - $.p5a.cfg.prvwMinWidth - $.p5a.cfg.prvwMinDelta
+>>>>>>> master:src/main.js
          intelli(
             x,
             evt.pageY+10,
@@ -232,7 +248,7 @@ function intelli(x, y, id, url, threadCached, ff) {
          obj.css('z-index', z++);
          $('body').prepend(obj);
       },
-      db.cfg.iSenseUp)
+      $.p5a.cfg.iSenseUp)
 }
 
 function outelli(id, wholeThread) {
@@ -245,31 +261,31 @@ function outelli(id, wholeThread) {
             $('#is'+id).remove()
          }
       },
-      db.cfg.iSenseDn)
+      $.p5a.cfg.iSenseDn)
 }
 
 function sage(env) {
    if(!env) {
       env = $('body')
    }
-   var email = env.find(iom.form.email)
+   var email = $.p5a.house.find(iom.form.email)
    email.val(email.val() == 'sage' ? '' : 'sage')
-   if (db.cfg.sageInAllFields) {
-      var pstr = env.find(iom.form.user)
+   if ($.p5a.cfg.sageInAllFields) {
+      var pstr = $.p5a.house.find(iom.form.user)
       pstr.val(pstr.val() == 'sage' ? '' : 'sage')
-      var ttl = env.find(iom.form.title)
+      var ttl = $.p5a.house.find(iom.form.title)
       ttl.val(ttl.val() == 'sage' ? '' : 'sage')
    }
 }
 
 function chktizer(obj, id, tp, sage, filtered) {
    var tizText = "";
-   if ($('#tiz' + id).attr('id') || db.cfg.hidePure)
+   if ($('#tiz' + id).attr('id') || $.p5a.cfg.hidePure)
       return
    if (tp) { /* tp - thread/post. true - thread */
-      if(db.cfg.hideCiteLen) {
+      if($.p5a.cfg.hideCiteLen) {
          var cite = '(' +
-            obj.find(iom.thread.message).text().slice(0, db.cfg.hideCiteLen - 1) +
+            obj.find(iom.thread.message).text().slice(0, $.p5a.cfg.hideCiteLen - 1) +
             '...)'
       } else { var cite = '' }
       tizText = [i18n.thrd, id.replace('t', i18n.no), cite,
@@ -305,14 +321,19 @@ function apply_refs(a, body) {
 function toggleBookmarks() {
    var genBookmarks = function () {
       var div = $('<span id="penBmsIn">')
-      for (i in db.bookmarks) {
+      for (i in $.p5a.bookmarks) {
          div.append($.ui.bookmark(
+<<<<<<< HEAD:src/main.js
             i, db.bookmarks[i].cite,
             db.bookmarks[i].timestamp,
+=======
+            i, $.p5a.bookmarks[i].cite,
+            $.p5a.bookmarks[i].timestamp,
+>>>>>>> master:src/main.js
             function (evt) {
                var subj = $(evt.target).parents('div:first')
-               delete db.bookmarks[subj.find('a.penBmLink').attr('href')]
-               db.saveState()
+               delete $.p5a.bookmarks[subj.find('a.penBmLink').attr('href')]
+               $.p5a.saveState()
                subj.remove()
             }))
       }
@@ -320,7 +341,11 @@ function toggleBookmarks() {
          function () {
             var subj = $(this)
             apply_isense(subj, function () {
+<<<<<<< HEAD:src/main.js
                if (db.cfg.bmAutoDel)
+=======
+               if ($.p5a.cfg.bmAutoDel)
+>>>>>>> master:src/main.js
                   subj.closest('div').find('a:first').click()
             })
          })
@@ -345,24 +370,24 @@ function toggleBookmarks() {
 function toggleBookmark(tid) {
    var subj = $('#'+tid)
    var url = $.turl(tid)
-   if (db.bookmarks[url]) {
-      delete db.bookmarks[url]
+   if ($.p5a.bookmarks[url]) {
+      delete $.p5a.bookmarks[url]
    } else {
-      var tcite =  $.ui.threadCite(tid, db.cfg.bmCiteLen - 1)
-      db.bookmarks[url]= { timestamp : new Date().getTime(), cite : tcite }
+      var tcite =  $.ui.threadCite(tid, $.p5a.cfg.bmCiteLen - 1)
+      $.p5a.bookmarks[url]= { timestamp : new Date().getTime(), cite : tcite }
    }
-   if (!db.saveState()) {
+   if (!$.p5a.saveState()) {
       alert('1')
    }
-   return db.bookmarks[url]
+   return $.p5a.bookmarks[url]
 }
 
 function toggleSettings () {
    var genVal = function (id, val) {
       var selected = null
-      if(db.combos[id]) {
+      if($.p5a.combos[id]) {
          selected = val
-         val = db.combos[id]
+         val = $.p5a.combos[id]
       }
       switch (typeof val) {
       case 'object':
@@ -392,17 +417,17 @@ function toggleSettings () {
    var defaultSetting = function (subj) {
       var id = subj.attr('id').replace(/^pen/, '')
       var inp = subj.find('input, select')
-      db.cfg[id] = db.dflt[id]
-      if(db.combos[id]) {
-         for(var def in db.combos[id]) {
+      $.p5a.cfg[id] = $.p5a.dflt[id]
+      if($.p5a.combos[id]) {
+         for(var def in $.p5a.combos[id]) {
             inp.find('option:selected').removeAttr('selected')
             inp.find('option[name='+def+']').attr('selected', 'selected')
             break
          }
       } else {
-         switch (typeof db.cfg[id]) {
+         switch (typeof $.p5a.cfg[id]) {
          case 'boolean':
-            if (db.cfg[id]) {
+            if ($.p5a.cfg[id]) {
                inp.attr('checked', 'checked')
             } else {
                inp.removeAttr('checked')
@@ -410,7 +435,7 @@ function toggleSettings () {
             break
          case 'number':
          case 'string':
-            inp.attr('value', db.cfg[id])
+            inp.attr('value', $.p5a.cfg[id])
             break
          }
       }
@@ -422,9 +447,9 @@ function toggleSettings () {
          var o = 0
          for (var id in items) {
             setStr += '<span id="pen' + items[id] + '" class="penSetting ' + (odd && (level >= 2) ? 'penSettingOdd' : '') + ' penLevel' + level + '">' +
-               db.name[items[id]] + ( level < 3 ? '<span class="right">' + genVal(items[id], db.cfg[items[id]]) + genDef(level) + '</span>' : genVal(items[id], db.cfg[items[id]])) + '</span>'
-            if (db.children[items[id]]) {
-               setStr += slist(db.children[items[id]], level + 1)
+               $.p5a.name[items[id]] + ( level < 3 ? '<span class="right">' + genVal(items[id], $.p5a.cfg[items[id]]) + genDef(level) + '</span>' : genVal(items[id], $.p5a.cfg[items[id]])) + '</span>'
+            if ($.p5a.children[items[id]]) {
+               setStr += slist($.p5a.children[items[id]], level + 1)
             }
             if (level == 2)
                odd = !odd
@@ -432,7 +457,7 @@ function toggleSettings () {
          }
          return setStr
       }
-      var generated = $(slist(db.roots, 1))
+      var generated = $(slist($.p5a.roots, 1))
       generated.find('button').click(
          function () {
             var childrenEnded = false
@@ -493,11 +518,11 @@ function toggleSettings () {
                return
             var id = e.closest('span.penSetting').attr('id').replace(/^pen/, '')
             if (e.attr('type') == 'checkbox') {
-               db.cfg[id] = e.attr('checked')
+               $.p5a.cfg[id] = e.attr('checked')
             } else if (e.is('option')) {
-               db.cfg[id] = e.attr('name')
+               $.p5a.cfg[id] = e.attr('name')
             } else {
-               db.cfg[id] = e.val()
+               $.p5a.cfg[id] = e.val()
             }
          })
    }
@@ -510,7 +535,11 @@ function toggleSettings () {
             [i18n.apply,
              function () {
                 saveSettings()
+<<<<<<< HEAD:src/main.js
                 if (!db.saveState()) {
+=======
+                if (!$.p5a.saveState()) {
+>>>>>>> master:src/main.js
                    alert('2')
                 }
                 location.reload(true) }],
@@ -535,48 +564,55 @@ function withSelection (subj, f) {
       })
 }
 
-function setupEnv (db, env) {
-   var isNight = true
-   var isInThread = $(iom.form.parent).length > 0 ? true : false
-   var thm = db.cfg.nightTime.match(/(\d+)\D+(\d+)\D+(\d+)\D+(\d+)/)
-   if(((thm[3] < db.global.time.getHours()) && (thm[1] > db.global.time.getHours())) ||
-      ((thm[3] == db.global.time.getHours()) && (thm[4] < db.global.time.getMinutes())) ||
-      ((thm[1] == db.global.time.getHours()) && (thm[2] > db.global.time.getMinutes()))) {
-      isNight = false
-   }
+$.p5a.house.click(
+   function (e) {
+      var subj = $(e.target)
+      if (e.which == 1) {
+         if (subj.closest(iom.post.abbr).length > 0 && $.p5a.cfg.useAJAX) {
+            var tid = subj.closest(iom.tid).attr('id')
+            var pid = subj.closest(iom.pid).attr('id')
+            cacheThread(tid, function () {
+               var replacee = null
+               $('#'+tid+' #'+pid+' '+iom.post.wholemessage).each(
+                  function () {
+                     if(!replacee) {
+                        replacee = $(this)
+                     } else {
+                        $(this).remove()
+                     }
+                  })
+               var replacer = $('<span/>').
+                  append($('#cache #'+pid+' '+iom.post.backrefsBlock).clone(true)).
+                  append($('#cache #'+pid+' '+iom.post.message).clone(true))
+               replacee.replaceWith(replacer)
+            })
+            return false
+         } else if (subj.attr('altsrc') && $.p5a.cfg.imgsUnfold) {
+            refold(subj.findc(iom.pid).attr('id'))
+            return false
+         } else if (subj.parent().is(iom.post.ref) && $.p5a.cfg.fastReply) {
+            showReplyForm(subj.closest(iom.tid).attr('id'), subj.text().replace(i18n.no,'>>'))
+            return false;
+         }
+      }
+   })
 
-   addStyle(css[isNight ? db.cfg.ntheme : db.cfg.theme])
-   if (db.cfg.btnsStyle == 'text') {
-      i18n.btns = i18nButtons.text
-   } else if (db.cfg.btnsStyle == 'css') {
-      i18n.btns = i18nButtons[isNight ? db.cfg.ntheme : db.cfg.theme]
-   }
+$.p5a.bind(
+   'domOk',
+   function () {
+      var isNight = true
+      var isInThread = $(iom.form.parent).length > 0 ? true : false
+      var thm = $.p5a.cfg.nightTime.match(/(\d+)\D+(\d+)\D+(\d+)\D+(\d+)/)
+      if(((thm[3] < $.p5a.time.getHours()) && (thm[1] > $.p5a.time.getHours())) ||
+         ((thm[3] == $.p5a.time.getHours()) && (thm[4] < $.p5a.time.getMinutes())) ||
+         ((thm[1] == $.p5a.time.getHours()) && (thm[2] > $.p5a.time.getMinutes()))) {
+         isNight = false
+      }
 
-   if (db.cfg.overrideF5) {
-      $(window).keydown(
-         function (e) {
-            if (e.which == 116) {
-               /* return false */
-            }
-         })
-   }
+      $.p5a.isNight = isNight
+      $.p5a.isInThread = isInThread
 
-   var bmenu = [[i18n.settings,
-                 function () { toggleSettings() }]]
-   if (db.cfg.bmarks)
-      bmenu.push([i18n.bookmarks,
-                  function () { toggleBookmarks() }])
-   if (db.cfg.idxHide && !isInThread)
-      bmenu.push([i18n.createThread,
-                  function (e) {
-                     env.find(iom.postform).toggle()
-                     env.find('hr').slice(0,1).toggle()
-                     $(e.target).text($(e.target).text() == i18n.createThread ? $(e.target).text(i18n.hideForm) : $(e.target).text(i18n.createThread)) }])
-
-   env.find(iom.menu).after(
-      $.ui.multiLink(bmenu, i18n.mLinkSep, '')
-   )
-
+<<<<<<< HEAD:src/main.js
    env.find(iom.postform).submit(function () {
       if (db.cfg.bmAutoAdd) {
          var subj = $(this)
@@ -599,10 +635,26 @@ function setupEnv (db, env) {
                } else {
                   subj.find(iom.form.status).text(i18n.okReloadingNow)
                   window.location.reload(true)
-               }
-            }})
-         return false
+=======
+      $.p5a.addStyle(css[isNight ? $.p5a.cfg.ntheme : $.p5a.cfg.theme])
+      if ($.p5a.cfg.btnsStyle == 'text') {
+         i18n.btns = i18nButtons.text
+      } else if ($.p5a.cfg.btnsStyle == 'css') {
+         i18n.btns = i18nButtons[isNight ? $.p5a.cfg.ntheme : $.p5a.cfg.theme]
       }
+
+      if ($.p5a.cfg.overrideF5) {
+         $(window).keypress(
+            function (e) {
+               if (e.which == 116 && !$(e.target).is('textarea')) {
+                  e.preventDefault()
+                  e.stopPropagation()
+                  document.location.reload()
+>>>>>>> master:src/main.js
+               }
+            })
+      }
+<<<<<<< HEAD:src/main.js
    })
 
    if(env.find(iom.form.status).length == 0) {
@@ -630,135 +682,216 @@ function setupEnv (db, env) {
             genCaptcha(key, 3)
       } else {
          ttStr = genCaptcha(key, 1)
-      }
-      env.find(iom.form.turdiv).html(ttStr)
-      env.find(iom.form.turtest).removeAttr('onfocus')
-   }
+=======
 
-   if(isInThread) {
-      if (db.cfg.citeInTitle) {
-         $('title').append(
-            ' &#8212; ' +
-               $.ui.threadCite('delform', db.cfg.ttlCiteLen - 1))
-      }
-      if (db.cfg.thrdMenu) {
-         env.find('hr:first').next('a:first').after (
-            $.ui.multiLink([
-               [i18n.imgs.unfold,
-                function (e) {
-                   $(iom.post.image).parent().click()
-                   $(e.target).text(
-                      $(e.target).text() == i18n.imgs.unfold ? i18n.imgs.fold : i18n.imgs.unfold
-                   )
-                }],
-               [i18n.imgLess.hide,
-                function (e) { $(iom.pid).each(
-                   function () {
-                      if ($(this).find(iom.post.image).length == 0)
-                         $(this).toggle()
-                   })
-                               $(e.target).text(
-                                  $(e.target).text() == i18n.imgLess.hide ? i18n.imgLess.show : i18n.imgLess.hide
-                               )}],
-               [i18n.citeLess.hide,
-                function (e) { $(iom.pid).each(
-                   function () {
-                      if ($(this).find(iom.post.backrefs).length == 0)
-                         $(this).toggle()
-                   })
-                               $(e.target).text(
-                                  $(e.target).text() == i18n.citeLess.hide ? i18n.citeLess.show : i18n.citeLess.hide
-                               )}]
-            ], ' / ', '').css('left', '0')
-         )
-      }
-      if (db.cfg.thrdMove) {
-         env.find(iom.thread.header+','+iom.postform).hide()
-      }
-   }
-   if (db.cfg.idxHide) {
-      env.find(iom.postform).hide()
-      env.find('hr').slice(0,1).hide()
-   }
+      var bmenu = [[i18n.settings,
+                    function () { toggleSettings() }]]
+      if ($.p5a.cfg.bmarks)
+         bmenu.push([i18n.bookmarks,
+                     function () { toggleBookmarks() }])
+      if ($.p5a.cfg.idxHide && !isInThread)
+         bmenu.push([i18n.createThread,
+                     function (e) {
+                        $.p5a.house.find(iom.postform).toggle()
+                        $.p5a.house.find('hr').slice(0,1).toggle()
+                        $(e.target).text($(e.target).text() == i18n.createThread ? $(e.target).text(i18n.hideForm) : $(e.target).text(i18n.createThread)) }])
 
+      $.p5a.house.find(iom.menu).after(
+         $.ui.multiLink(bmenu, i18n.mLinkSep, '')
+      )
+
+      $.p5a.house.find(iom.postform).submit(function () {
+         if ($.p5a.cfg.bmAutoAdd) {
+            var subj = $(this)
+            var t = $(this).parents(iom.tid)
+            var tid = t.attr('id')
+            if (!toggleBookmark(tid))
+               toggleBookmark(tid)
+         }
+         if ($.p5a.cfg.useAJAX) {
+            subj.find(iom.form.status).text(i18n.sending)
+            subj.ajaxSubmit({
+               timeout: 0,
+               success:
+               function(responseText, statusText) {
+                  if (responseText.search(/delform/) == -1) {
+                     var errResult = 'Ошибка'
+                     subj.find(iom.form.status).text(errResult)
+                     errResult = responseText.match(/<h1.*?>(.*?)<br/)[1]
+                     subj.find(iom.form.status).text(errResult)
+                  } else {
+                     subj.find(iom.form.status).text(i18n.okReloadingNow)
+                     window.location.reload(true)
+                  }
+               }})
+            return false
+         }
+      })
+
+      if($.p5a.house.find(iom.form.status).length == 0) {
+         $.p5a.house.find(iom.form.email).after('<i></i>')
+      }
+
+      var img = $.p5a.house.find(iom.form.turimage)
+      if (img.length > 0) {
+         if ($.p5a.cfg.tripleTt) {
+            img.css('padding-left', '3px').
+               after(img.clone(true)).click().
+               after(img.clone(true)).click()
+         }
+      } else {
+         var genCaptcha = function (key, dummy) {
+            return '<img alt="Update captcha" src="/b/captcha.pl?key=' + key + '&amp;dummy=' + dummy + '" onclick="update_captcha(this)" style="padding-left: 3px" />'
+         }
+         var tNum = $(iom.form.parent).val()
+         var key = 'mainpage'
+         if (tNum)
+            key = 'res' + tNum
+         if ($.p5a.cfg.tripleTt) {
+            ttStr  = genCaptcha(key, 1) +
+               genCaptcha(key, 2) +
+               genCaptcha(key, 3)
+         } else {
+            ttStr = genCaptcha(key, 1)
+         }
+         $.p5a.house.find(iom.form.turdiv).html(ttStr)
+         $.p5a.house.find(iom.form.turtest).removeAttr('onfocus')
+>>>>>>> master:src/main.js
+      }
+
+      if(isInThread) {
+         if ($.p5a.cfg.citeInTitle) {
+            $('title').append(
+               ' &#8212; ' +
+                  $.ui.threadCite('delform', $.p5a.cfg.ttlCiteLen - 1))
+         }
+         if ($.p5a.cfg.thrdMenu) {
+            $.p5a.house.find('hr:first').next('a:first').after (
+               $.ui.multiLink([
+                  [i18n.imgs.unfold,
+                   function (e) {
+                      $(iom.post.image).parent().click()
+                      $(e.target).text(
+                         $(e.target).text() == i18n.imgs.unfold ? i18n.imgs.fold : i18n.imgs.unfold
+                      )
+                   }],
+                  [i18n.imgLess.hide,
+                   function (e) { $(iom.pid).each(
+                      function () {
+                         if ($(this).find(iom.post.image).length == 0)
+                            $(this).toggle()
+                      })
+                                  $(e.target).text(
+                                     $(e.target).text() == i18n.imgLess.hide ? i18n.imgLess.show : i18n.imgLess.hide
+                                  )}],
+                  [i18n.citeLess.hide,
+                   function (e) { $(iom.pid).each(
+                      function () {
+                         if ($(this).find(iom.post.backrefs).length == 0)
+                            $(this).toggle()
+                      })
+                                  $(e.target).text(
+                                     $(e.target).text() == i18n.citeLess.hide ? i18n.citeLess.show : i18n.citeLess.hide
+                                  )}]
+               ], ' / ', '').css('left', '0')
+            )
+         }
+         if ($.p5a.cfg.thrdMove) {
+            $.p5a.house.find(iom.thread.header+','+iom.postform).hide()
+         }
+      }
+      if ($.p5a.cfg.idxHide) {
+         $.p5a.house.find(iom.postform).hide()
+         $.p5a.house.find('hr').slice(0,1).hide()
+      }
+
+<<<<<<< HEAD:src/main.js
    if (db.cfg.taResize) {
       env.find(iom.form.message).
          attr('rows', db.cfg.taHeight).
          attr('cols', db.cfg.taWidth)
    }
+=======
+      if ($.p5a.cfg.taResize) {
+         $.p5a.house.find(iom.form.message).
+            attr('rows', $.p5a.cfg.taHeight).
+            attr('cols', $.p5a.cfg.taWidth)
+      }
+>>>>>>> master:src/main.js
 
-   if (db.cfg.sageBtn) {
-      env.find(iom.form.email).after(
-         $.ui.multiLink([
-            [i18n.btns.sage,
-             function () { sage() }]
-         ], i18n.btns.begin, i18n.btns.end, i18n.btns.sep)
-      )}
+      if ($.p5a.cfg.sageBtn) {
+         $.p5a.house.find(iom.form.email).after(
+            $.ui.multiLink([
+               [i18n.btns.sage,
+                function () { sage() }]
+            ], i18n.btns.begin, i18n.btns.end, i18n.btns.sep)
+         )}
 
-   if (db.cfg.fmtBtns) {
-      env.find(iom.postform + ' ' + iom.form.submit).after(
-         $.ui.multiLink([
-            [i18n.btns.capsBold, function () {
-               withSelection(
-                  env.find(iom.form.message),
-                  function (s) { return '**'+s.toUpperCase()+'**' }) }],
-            [i18n.btns.spoiler, function () {
-               withSelection(
-                  env.find(iom.form.message),
-                  function (s) { return '%%'+s+'%%' }) }]
-         ], i18n.btns.begin, i18n.btns.end, i18n.btns.sep))
+      if ($.p5a.cfg.fmtBtns) {
+         $.p5a.house.find(iom.postform + ' ' + iom.form.submit).after(
+            $.ui.multiLink([
+               [i18n.btns.capsBold, function () {
+                  withSelection(
+                     $.p5a.house.find(iom.form.message),
+                     function (s) { return '**'+s.toUpperCase()+'**' }) }],
+               [i18n.btns.spoiler, function () {
+                  withSelection(
+                     $.p5a.house.find(iom.form.message),
+                     function (s) { return '%%'+s+'%%' }) }]
+            ], i18n.btns.begin, i18n.btns.end, i18n.btns.sep))
 
-      env.find(iom.postform + ' ' + iom.form.submit).after(
-         $.ui.multiLink([
-            [i18n.btns.bold, function () {
-               withSelection(
-                  env.find(iom.form.message),
-                  function (s) { return '**'+s+'**' }) }],
-            [i18n.btns.italic, function () {
-               withSelection(
-                  env.find(iom.form.message),
-                  function (s) { return '*'+s+'*' }) }],
-            [i18n.btns.striked, function () {
-               withSelection(
-                  env.find(iom.form.message),
-                  function (s) {
-                     var l = s.length
-                     for (var i = 0; i < l; i++) {
-                        s += '^H'
-                     }
-                     return s }) }],
-            [i18n.btns.underline, function () {
-               withSelection(
-                  env.find(iom.form.message),
-                  function (s) { return '__'+s+'__' }) }],
-            [i18n.btns.source, function () {
-               withSelection(
-                  env.find(iom.form.message),
-                  function (s) {
-                     if (s.search(/\n/) != -1) {
-                        return '    '+s.replace(/\n/g, '\n    ')
-                     } else {
-                        return '`'+s+'`' }
-                  }) }]
-         ], i18n.btns.begin, i18n.btns.end, i18n.btns.sep))
-   }
+         $.p5a.house.find(iom.postform + ' ' + iom.form.submit).after(
+            $.ui.multiLink([
+               [i18n.btns.bold, function () {
+                  withSelection(
+                     $.p5a.house.find(iom.form.message),
+                     function (s) { return '**'+s+'**' }) }],
+               [i18n.btns.italic, function () {
+                  withSelection(
+                     $.p5a.house.find(iom.form.message),
+                     function (s) { return '*'+s+'*' }) }],
+               [i18n.btns.striked, function () {
+                  withSelection(
+                     $.p5a.house.find(iom.form.message),
+                     function (s) {
+                        var l = s.length
+                        for (var i = 0; i < l; i++) {
+                           s += '^H'
+                        }
+                        return s }) }],
+               [i18n.btns.underline, function () {
+                  withSelection(
+                     $.p5a.house.find(iom.form.message),
+                     function (s) { return '__'+s+'__' }) }],
+               [i18n.btns.source, function () {
+                  withSelection(
+                     $.p5a.house.find(iom.form.message),
+                     function (s) {
+                        if (s.search(/\n/) != -1) {
+                           return '    '+s.replace(/\n/g, '\n    ')
+                        } else {
+                           return '`'+s+'`' }
+                     }) }]
+            ], i18n.btns.begin, i18n.btns.end, i18n.btns.sep))
+      }
 
-   /* id надо менять только после манипуляций с формой, потому что иначе
+      /* id надо менять только после манипуляций с формой, потому что иначе
       перестает работать селектор. TODO сделать это и ненужным */
 
-   db.cfg.sageMan &&
-      sage(env)
+      $.p5a.cfg.sageMan &&
+         sage(env)
 
-   db.cfg.constPwd &&
-      env.find(iom.form.password).val(db.cfg.constPwd)
+      $.p5a.cfg.constPwd &&
+         $.p5a.house.find(iom.form.password).val($.p5a.cfg.constPwd)
 
-   var turingTest = env.find(iom.form.turtest)
-   turingTest.keypress(
-      function (key) {
-         var recoded = $.xlatb[String.fromCharCode(key.which).toLowerCase()]
-         if (recoded) {
-            /* Not a perfect piece of code, but
+      var turingTest = $.p5a.house.find(iom.form.turtest)
+      turingTest.keypress(
+         function (key) {
+            var recoded = $.xlatb[String.fromCharCode(key.which).toLowerCase()]
+            if (recoded) {
+               /* Not a perfect piece of code, but
                   i'm thank you eurekafag (: */
+<<<<<<< HEAD:src/main.js
             var caret = key.target.selectionStart
             var str = key.target.value
             key.target.value = str.substring(0,caret) + recoded + str.substring(caret)
@@ -796,6 +929,13 @@ function setupEnv (db, env) {
                return false
             } else if (subj.attr('altsrc') && db.cfg.imgsUnfold) {
                refold(subj)
+=======
+               var caret = key.target.selectionStart
+               var str = key.target.value
+               key.target.value = str.substring(0,caret) + recoded + str.substring(caret)
+               key.target.selectionStart = caret+1
+               key.target.selectionEnd = caret+1
+>>>>>>> master:src/main.js
                return false
             } else if (subj.parent().is(iom.post.ref)) {
 	       alert('d')
@@ -803,6 +943,7 @@ function setupEnv (db, env) {
 	       return false
 	    }
          }
+<<<<<<< HEAD:src/main.js
       })
 
    env.bind(
@@ -933,3 +1074,178 @@ function postSetup () {
 db.loadState(function () {
    $(document).ok(db, setupEnv, postSetup)
 })
+=======
+      )
+   })
+
+$.p5a.bind(
+   'msg',
+   function (subj) {
+      var pid = subj.attr('id')
+      var tid = subj.attr('tid')
+      if ($.p5a.cfg.pstsHide) {
+         subj.find(iom.post.ref).append($.ui.multiLink([
+            [i18n.hidePost,
+             function () { chktizer(subj, pid, false); toggleVisible(pid); return false; }]
+         ], ' ', ''))
+      }
+      if ($.p5a.cfg.fwdRefs && $.p5a.references[pid]) {
+         var refs =
+            function () {
+               var r = [];
+               for (j in $.p5a.references[pid]) {
+                  r.push($.ui.anchor($.p5a.references[pid][j]))
+               }
+               return $.ui.refs(r.join(', '))
+            }
+         subj.find(iom.post.message).before(refs())
+      }
+   })
+
+$.p5a.bind(
+   'thread',
+   function (subj) {
+      var tid = subj.attr('id')
+      if (!tid)
+	 return
+      var turl = $.tidurl(tid)
+      var tmenu = []
+      var trm = subj.find('a:first')
+      if (trm.length == 0) {
+         subj.append('&nbsp; [<a/>]')
+         trm = subj.find('a:first')
+      }
+      if ($.p5a.cfg.thrdHide)
+         tmenu.push([
+            i18n.hide,
+            function () { chktizer(subj, tid, true, true); toggleVisible(tid) }])
+      if ($.p5a.cfg.thrdUnfold && (subj.find(iom.thread.moar).length | $.p5a.isSecondary))
+         tmenu.push([
+            $.p5a.isSecondary ? i18n.fold : i18n.unfold,
+            function () { toggleThread(tid, !$.p5a.isSecondary) }])
+      if ($.p5a.cfg.bmarks)
+         tmenu.push([
+            $.p5a.bookmarks[turl] ? i18n.fromBms : i18n.toBms,
+            function (e) { $(e.target).text(toggleBookmark(tid) ? i18n.fromBms : i18n.toBms) }])
+      if ($(iom.form.parent).length == 0)
+         tmenu.push([i18n.reply, turl])
+      trm.replaceWith($.ui.multiLink(tmenu, '', ''))
+      if($(iom.form.parent).length == 0) {
+         var moar = subj.find(iom.thread.moar).clone()
+         if (moar.length == 0) {
+            moar = $('<span class="omittedposts"></span>')
+         }
+         tmenu[tmenu.length-1] = [
+            i18n.replyThat,
+            function () { showReplyForm(tid) }]
+         moar.append($.ui.multiLink(tmenu))
+         subj.find(iom.thread.eotNotOp).after(moar)
+      }
+   })
+
+$.p5a.bind(
+   'loadOk',
+   function () {
+      if ($.p5a.cfg.thrdMove && $(iom.form.parent).length > 0) {
+         showReplyForm($(iom.tid).attr('id'), null, null, true, true)
+      }
+
+      $.p5a.cfg.iSense &&
+	 $.p5a.house.find(iom.anchors).each(
+            function () { apply_isense($(this)) }
+	 )
+
+      for(var objId in $.p5a.hidden) {
+	 /* It's an low level alternative of toggle method
+          * TODO Rewrite toggle for suitable usage in this
+          * place (may be impossible). */
+	 if (objId) {
+            var subj = $.p5a.house.find('#'+objId)
+            var isThread = objId.search(/t/) == -1 ? false : true
+            if ($.p5a.cfg.thrdInThrdLeave && isInThread && isThread )
+               continue
+            subj.css('display', 'none')
+            chktizer(subj, objId, isThread)
+            $.p5a.house.find('#tiz'+objId).css('display','block')
+	 }
+      }
+      
+      for (var objId in $.p5a.filtered) {
+	 var subj = $.p5a.house.find('#'+objId)
+	 subj.css('display', 'none')
+	 chktizer(subj, objId, false, false, true)
+	 $.p5a.house.find('#tiz'+objId).css('display','block')
+      }
+
+      scope.timer.diff('penochka sync');
+      scope.timer.init();
+      setTimeout(function() {
+         scope.timer.diff('async queue');
+         $('p.footer a:last').
+            after(' + <a href="http://github.com/anonymous32767/Penochka/" title="' + scope.timer.cache + ' total: ' + scope.timer.total + 'ms">penochka UnStAbLe</a>')
+      },0);
+      $.p5a.isSecondary = true
+   })
+
+/* TODO: Move theese settings to the corresponding modules */
+$.p5a.setting ('hide', 'Скрытие', 'feats');
+$.p5a.setting ('thrdHide', 'Потоков', 'hide', true);
+$.p5a.setting ('pstsHide', 'Сообщений', 'hide', true);
+$.p5a.setting ('iSense', 'Превью цитируемых (>>) сообщений', 'feats', true);
+$.p5a.setting ('fwdRefs', 'Обратные ссылки', 'feats', true);
+$.p5a.setting ('imgsUnfold', 'Развертывание картинок', 'feats', true);
+$.p5a.setting ('thrdUnfold', 'Развертывание тредов', 'feats', true);
+$.p5a.setting ('thrdMenu', 'Меню треда', 'feats', true);
+$.p5a.setting ('constPwd', 'Постоянный пароль на удаление', 'feats', '')
+$.p5a.setting ('bmarks', 'Закладки', 'feats', true)
+
+$.p5a.setting ('taResize', 'Изменять размеры поля ввода сообщения', 'form', true);
+$.p5a.setting ('taHeight', 'Высота', 'taResize', 12);
+$.p5a.setting ('taWidth', 'Ширина', 'taResize', 66);
+$.p5a.setting ('fastReply', 'Быстрый ответ', 'form', true);
+$.p5a.setting ('thrdMove', 'Переносить вниз, находясь в треде', 'form', true);
+$.p5a.setting ('idxHide', 'Скрывать, находясь на главной', 'form', false);
+$.p5a.setting ('sageBtn', 'Кнопка сажи', 'form', true);
+$.p5a.setting ('fmtBtns', 'Кнопки форматирования', 'form', true);
+$.p5a.setting ('tripleTt', 'Троировать капчу', 'form', false);
+
+$.p5a.setting ('sageMan', 'Я &#8212; человек-<b>САЖА</b>', 'sage', false);
+$.p5a.setting ('sageInAllFields', 'Сажа идет во все поля', 'sage', false);
+
+$.p5a.setting ('compact', 'Компактное отображение', 'view', true);
+$.p5a.setting ('theme', 'Тема', 'view', {photon: 'Фотон', neutron: 'Нейтрон'});
+$.p5a.setting ('ntheme', 'Ночная тема', 'view', {photon: 'Фотон', neutron: 'Нейтрон'});
+$.p5a.setting ('btnsStyle', 'Стиль кнопок форматирования', 'view', {css: 'Графические', text: 'Текстовые'});
+$.p5a.setting ('hlPrevs', 'Подсвечивать превью ярче', 'view', true);
+
+$.p5a.setting ('censTitle', 'Заглавие', 'cens', '');
+$.p5a.setting ('censUser', 'Имя пользователя', 'cens', '');
+$.p5a.setting ('censMail', 'E-mail (sage)', 'cens', '');
+$.p5a.setting ('censMsg', 'Текст сообщения', 'cens', '');
+$.p5a.setting ('censTotal', 'Любое место сообщения', 'cens', '');
+
+$.p5a.setting ('useAJAX', 'Использовать асинхронный яваскрипт', 'sys', true);
+
+$.p5a.setting ('hidePure', 'Скрывать без следа', 'ftune', false);
+$.p5a.setting ('censPure', 'Скрывать отфильтрованное без следа', 'ftune', true);
+$.p5a.setting ('fitImgs', 'При развертывании подгонять картинки по ширине', 'ftune', true);
+$.p5a.setting ('citeInTitle',
+               'Показывать цитату из треда в заголовке страницы (&lt;title&gt;)',
+               'ftune', true);
+$.p5a.setting ('hideCiteLen', 'Размер цитаты скрытых объектов', 'ftune', 55);
+$.p5a.setting ('ttlCiteLen', 'Размер цитаты в заголовке', 'ftune', 55);
+$.p5a.setting ('bmCiteLen', 'Размер цитаты в закладках', 'ftune', 55);
+$.p5a.setting ('delay', 'Замедление в создании превью', 'ftune');
+$.p5a.setting ('iSenseUp', 'На притяжение', 'delay', 0);
+$.p5a.setting ('iSenseDn', 'На отпадание',  'delay', 200);
+$.p5a.setting ('bmAutoAdd', 'Автоматически добавлять тред в закладки при ответе',  'ftune', true);
+$.p5a.setting ('bmAutoDel', 'Автоматически удалять закладку, указывающую на утеряный тред',  'ftune', false);
+$.p5a.setting ('nightTime', 'Ночной интервал', 'ftune', '22:00-8:00');
+$.p5a.setting ('prvwMinWidth', 'Минимальная ширина превью сообщения', 'ftune', 450);
+$.p5a.setting ('prvwMinDelta', 'Дельта ширины превью сообщения', 'ftune', 200);
+$.p5a.setting ('overrideF5', 'Перегружать только активный фрейм по F5', 'ftune', true);
+$.p5a.setting ('thrdInThrdLeave', 'Не скрывать тред, когда заходишь в него', 'ftune', false);
+
+
+$.p5a.loadState($.p5a.ok)
+>>>>>>> master:src/main.js

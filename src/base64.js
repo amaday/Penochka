@@ -1,8 +1,5 @@
-/**
-*
-*  Base64 encode / decode
-*  http://www.webtoolkit.info/
-*
+/*  Base64 encode / decode
+*   http://www.webtoolkit.info/
 **/
 
 var _keyStr = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+="

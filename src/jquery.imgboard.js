@@ -29,49 +29,6 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-jQuery.fn.reverse = [].reverse
-jQuery.fn.sort = [].sort
-
-/* */
-/*@ http://www.mail-archive.com/jquery-en@googlegroups.com/msg16487.html */
-function addStyle( css ) {
-   var style = document.createElement( 'style' );
-   style.type = 'text/css';
-   var head = document.getElementsByTagName('head')[0];
-   head.appendChild( style );
-   if( style.styleSheet )  // IE
-      style.styleSheet.cssText = css;
-   else  // other browsers
-      style.appendChild( document.createTextNode(css) );
-   return style;
-}
-
-/* Some useful stuff */
-jQuery.fn.extend({
-   /* Finds element parent which has class passed in argument. */
-   findc:
-   function(cls) {
-      return $(this).is(cls) ? $(this) : $(this).parents(cls)
-   }
-})
-
-/* */
-/*
-  For localization to your language simply replace this table.
- */
-var xlatb =
-   {й: 'q', ц: 'w', у: 'e', к: 'r', е: 't', н: 'y', г: 'u',
-    ш: 'i', щ: 'o', з: 'p', ф: 'a', ы: 's', в: 'd', а: 'f',
-    п: 'g', р: 'h', о: 'j', л: 'k', д: 'l', я: 'z', ч: 'x',
-    с: 'c', м: 'v', и: 'b', т: 'n', ь: 'm'
-   }
-
-var blatx =
-   {q: 'й', w: 'ц', e: 'у', r: 'к', t: 'е', y: 'н', u: 'г',
-    i: 'ш', o: 'щ', p: 'з', '[': 'х', ']': 'ъ', a: 'ф',
-    s: 'ы', d: 'в', f: 'а', g: 'п', h: 'р', j: 'о', k: 'л',
-    l: 'д', ';': 'ж', '\'': 'э', z: 'я', x: 'ч', c: 'с',
-    v: 'м', b: 'и', n: 'т', m: 'ь', ',': 'б', '.': 'ю'}
 
 /* State machine here - walks through siblings and add it to
    specific IOM element.
@@ -138,6 +95,7 @@ iom = {
    }
 }
 
+<<<<<<< HEAD:src/jquery.imgboard.js
 function dvach (onload, env) {
    function parse (messages) {
       var cpost = null
@@ -239,6 +197,48 @@ function dvach (onload, env) {
             }
             $.references[pid][spid]=spid
          }) */
+=======
+function dvach () {
+   function parse (cloned) {
+      var tnum = ''
+      cloned.children().each(
+	 function () {
+	    var subj = $(this)
+	    if (subj.is('table')) {
+	       subj.
+		  attr('id', 'p' + subj.find('a[name]').attr('name')).
+		  attr('tid', 't' + tnum);
+	       $.p5a.trigger('msg', subj)
+	    } else if (subj.is('a[name]')) {
+	       tnum = subj.attr('name')
+	       subj.
+		  attr('id', 'p' + tnum).
+		  attr('tid', 't' + tnum)
+	       $.p5a.trigger('msg', subj)	       
+	    } else if (subj.is('span.reflink')) {
+	       var pa = subj.next()
+	       pa.attr('id', 't' + tnum)
+	       $.p5a.trigger('thread', pa)
+	    }
+	 }
+      )
+      /* cloned.append(currThread); */
+      /* this is delform itself, so comment this */
+      /* $.p5a.house.trigger('thread', currThread) */
+      cloned.find(iom.thread.moar).each(
+         function () {
+            $(this).html($(this).text().split('.')[0]+'. ')
+         })
+      /* Workaround bug #71 (Cannot delete posts while in thread)  */
+      cloned.submit(
+	 function () {
+	    cloned.find(iom.tid+' form').remove()
+	 })
+   }
+
+   function process(cloned) {
+      
+>>>>>>> master:src/jquery.imgboard.js
    }
 
    jQuery.fn.extend({
@@ -251,7 +251,7 @@ function dvach (onload, env) {
       function (tid) {
          var tnum = tid.replace('t','')
          var form = $(this)
-         var lnum = $('#' + tid + ' ' + iom.thread.eot).findc(iom.pid).attr('id').replace('p','')
+         var lnum = $('#' + tid + ' ' + iom.thread.eot).closest(iom.pid).attr('id').replace('p','')
          /* Reserved: manually switch to thread gb2
 
          form.find('input[name=gb2][value=board]').removeAttr('checked')
@@ -275,7 +275,7 @@ function dvach (onload, env) {
       function (url, f, ef) {
          var e = $('<span/>')
          e.load(
-            'http://'+location.host + url + ' #delform',
+            'http://'+ $.p5a.domain  +  url + ' #delform',
             {},
             function (a,b,c) {
                if (b != 'success') {
@@ -286,23 +286,19 @@ function dvach (onload, env) {
                var cloned = $(e).find('#delform')
                parse(cloned)
                process(cloned)
-               f(cloned)
+	       f(cloned)
             })
       }
-   });
+   })
 
    jQuery.extend({
-      turl: function (tid) {
-         return '/' + db.global.board + '/res/'+tid.replace(/\D/g, '')+'.html'
+      tidurl: function (tid) {
+         return '/' + $.p5a.board + '/res/'+tid.replace(/\D/g, '')+'.html'
       },
       urltid: function (url) {
 	 return 't' + url.replace(/.*\/(\d+)\.html/,'$1')
       }
-   });
-
-   jQuery.xlatb = xlatb;
-   jQuery.references = [];
-   jQuery.bookmarks = [];
+   })
 
    jQuery.ui = {
       anchor :
@@ -322,7 +318,7 @@ function dvach (onload, env) {
             var obj = idobj
          }
 	 obj.find('a[name]').removeAttr('name')
-         obj.addClass(db.cfg.hlPrevs ? 'highlight' : 'reply')
+         obj.addClass($.p5a.cfg.hlPrevs ? 'highlight' : 'reply')
          obj.attr('style','position:absolute; top:' + y +
                   'px; left:' + x + 'px;display:block;')
          return obj
@@ -397,6 +393,7 @@ function dvach (onload, env) {
       }
    }
 
+<<<<<<< HEAD:src/jquery.imgboard.js
    return function (obj, aft) {
       onload()
 
@@ -435,5 +432,11 @@ jQuery.fn.extend({
             }
          )
       }
+=======
+   return function () {
+      parse($.p5a.house.find('#delform'))
+      $('body').append('<div id="cache" style="display:none" />')
+>>>>>>> master:src/jquery.imgboard.js
    }
-})
+}
+

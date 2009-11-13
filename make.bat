@@ -31,7 +31,11 @@
 @if not exist src goto errmsg
 @if exist penochka%ext% del penochka%ext%
 cd src
+<<<<<<< HEAD:make.bat
 @ type header.js css.js i18n.js base64.js jquery.min.js jquery.form.js storage.js jquery.walk.js jquery.imgboard.js settings.js main.js >> penochka%ext%
+=======
+@ type header.js css.js i18n.js jquery.min.js jquery.form.js jquery.imgboard.js core.js storage.js main.js modules/imagesUnfolding.js >> penochka%ext%
+>>>>>>> master:make.bat
 cd ..
 move src\penochka%ext% penochka%ext%
 @cls
