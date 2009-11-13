@@ -830,10 +830,10 @@ $.p5a.bind(
 	 return
       var turl = $.tidurl(tid)
       var tmenu = []
-      var trm = subj.find(iom.thread.ref).next('a')
+      var trm = subj.find('a:first')
       if (trm.length == 0) {
-         subj.find(iom.thread.ref).after('&nbsp; [<a/>]')
-         trm = subj.find(iom.thread.ref).next('a')
+         subj.append('&nbsp; [<a/>]')
+         trm = subj.find('a:first')
       }
       if ($.p5a.cfg.thrdHide)
          tmenu.push([

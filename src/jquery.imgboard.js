@@ -97,52 +97,29 @@ iom = {
 
 function dvach () {
    function parse (cloned) {
-      var opPost = $('<span/>');
-      var currThread = $('<span/>');
-      var tid = '';
-      cloned.contents().each(
-         function () {
-            var subj = $(this)
-            if (subj.is('table')) {
-               if (opPost) {
-                  currThread.append(opPost);
-		  $.p5a.trigger('msg', opPost)
-                  opPost = false;
-               }
-               subj.
+      var tnum = ''
+      cloned.children().each(
+	 function () {
+	    var subj = $(this)
+	    if (subj.is('table')) {
+	       subj.
 		  attr('id', 'p' + subj.find('a[name]').attr('name')).
-		  attr('tid', tid);
-               subj.addClass('penPost');
+		  attr('tid', 't' + tnum);
 	       $.p5a.trigger('msg', subj)
-            }
-            if(opPost) {
-               opPost.append(subj);
-               if(subj.is('a') && subj.attr('name')) {
-		  var ptid = subj.attr('name')
-		  tid = 't' + ptid
-                  currThread.attr('id', tid);
-                  currThread.addClass('penThread');
-                  opPost.
-		     attr('id', 'p'+ptid).
-		     attr('tid', tid)
-                  opPost.addClass('penPost');
-               }
-            } else if (currThread) {
-               currThread.append(this);
-            }
-            if ($(this).is('hr')) {
-               if (opPost) {
-		  $.p5a.trigger('msg', opPost)
-                  currThread.append(opPost)
-               }
-	       $.p5a.trigger('thread', currThread)               
-	       cloned.append(currThread)
-               opPost = $('<span/>');
-               currThread = $('<span/>');
-            }
-         }
-      );
-      cloned.append(currThread); 
+	    } else if (subj.is('a[name]')) {
+	       tnum = subj.attr('name')
+	       subj.
+		  attr('id', 'p' + tnum).
+		  attr('tid', 't' + tnum)
+	       $.p5a.trigger('msg', subj)	       
+	    } else if (subj.is('span.reflink')) {
+	       var pa = subj.next()
+	       pa.attr('id', 't' + tnum)
+	       $.p5a.trigger('thread', pa)
+	    }
+	 }
+      )
+      /* cloned.append(currThread); */
       /* this is delform itself, so comment this */
       /* $.p5a.house.trigger('thread', currThread) */
       cloned.find(iom.thread.moar).each(
@@ -313,12 +290,8 @@ function dvach () {
    }
 
    return function () {
-      var threadsRaw = $.p5a.house.find('#delform');
-      var cloned = threadsRaw.clone()
-      parse(cloned)
-      process(cloned)
+      parse($.p5a.house.find('#delform'))
       $('body').append('<div id="cache" style="display:none" />')
-      threadsRaw.replaceWith(cloned);
    }
 }
 
