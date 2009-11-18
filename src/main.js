@@ -175,6 +175,10 @@ function refold(id) {
    if (db.cfg.fitImgs) {
       subj.css('max-width', $(window).width() - 64 + 'px')
    }
+   /* This schizophrenic line needed for opera
+      to repaint unfolding image */
+   subj.replaceWith(subj.clone())
+   /* End of schizophrenic line */
    return false
 }
 
