@@ -159,11 +159,12 @@ function swapAttr(obj, a1, a2) {
 
 function prepareRefold(subj) {
    var altsrc = subj.closest('a').attr('href')
+   var althw = subj.closest(iom.pid).find(iom.post.imageinfo).text().match(/(\d+)x(\d+)/)
    var w = subj.attr('width')
    var h = subj.attr('height')
    subj.attr('altsrc', altsrc)
    subj.attr('style','height: '+h+'px; width:'+w+'px;')
-   subj.attr('altstyle', iom.unfoldImgCss+'min-height: '+h+'px; min-width: '+w+'px;')
+   subj.attr('altstyle', iom.unfoldImgCss+'height: '+althw[2]+'px; width: '+althw[1]+'px;'+ (althw[1] > 800 ? 'float:left;' :''))
    subj.removeAttr('height')
    subj.removeAttr('width')
 }
