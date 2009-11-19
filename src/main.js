@@ -159,28 +159,37 @@ function swapAttr(obj, a1, a2) {
 
 function prepareRefold(subj) {
    var altsrc = subj.closest('a').attr('href')
-   var althw = subj.closest(iom.pid).find(iom.post.imageinfo).text().match(/(\d+)x(\d+)/)
+   var althw = subj.closest(iom.pid).find(iom.post.imageinfo).text().match(/(\d+)x(\d+)/) 
    var w = subj.attr('width')
    var h = subj.attr('height')
    subj.attr('altsrc', altsrc)
-   subj.attr('style','height: '+h+'px; width:'+w+'px;')
-   subj.attr('altstyle', iom.unfoldImgCss+'height: '+althw[2]+'px; width: '+althw[1]+'px;'+ (althw[1] > 800 ? 'float:left;' :''))
+   subj.attr('style', 'height: '+h+'px; width:'+w+'px;')
+   subj.attr('altstyle', iom.unfoldImgCss+'min-height: '+h+'px; min-width: '+w+'px;')
    subj.removeAttr('height')
    subj.removeAttr('width')
 }
 
 function refold(id) {
    var subj = $('#' + id + ' ' + iom.post.image)
-   swapAttr(subj, 'src', 'altsrc')
-   swapAttr(subj, 'style', 'altstyle')
-   if (db.cfg.fitImgs) {
-      subj.css('max-width', $(window).width() - 64 + 'px')
+   if (subj.attr('altsrc')) {
+      swapAttr(subj, 'src', 'altsrc')
+      swapAttr(subj, 'style', 'altstyle')
+      if (db.cfg.fitImgs) {
+         subj.css('max-width', $(window).width() - 64 + 'px')
+      }
+      /* This schizophrenic line needed for opera
+         to repaint unfolding image */
+      subj.replaceWith(subj.clone())
+      /* End of schizophrenic line */
+      return false
+   } else {
+      try {
+         if (subj.attr('src').replace(/^.*?(\d+)\w+\.\w+$/,"$1") == subj.closest('a').attr('href').replace(/^.*?(\d+)\.\w+$/,"$1")) {
+            prepareRefold(subj)
+            return refold(id)
+         }
+      } catch (err) {}
    }
-   /* This schizophrenic line needed for opera
-      to repaint unfolding image */
-   subj.replaceWith(subj.clone())
-   /* End of schizophrenic line */
-   return false
 }
 
 /* */
@@ -345,11 +354,11 @@ function resetCaptcha(form, needFocus) {
    }
    form.find(iom.form.turimage).click(
       function (e) {
-	 resetCaptcha($(e.target).closest('form'), true)
+         resetCaptcha($(e.target).closest('form'), true)
          return false
       })
    form.find(iom.form.turtest).removeAttr('onfocus')
-   if (needFocus) { 
+   if (needFocus) {
       form.find(iom.form.turtest).val('')
       form.find(iom.form.turtest)[0].focus()
    }
@@ -359,34 +368,34 @@ function applySearch (input) {
    var t = null
    input.keydown(
       function () {
-	 clearTimeout(t)
-	 t = setTimeout(
-    function () {
-	       var searchPhrase = input.val()
-	       var items = $('.penSetting')
-	       if (searchPhrase.length > 1) {
-		  items.hide()
-		  searchArray = searchPhrase.split(' ')
-		  for (var i = 0; i < searchArray.length; i++) {
-		     var re = new RegExp(searchArray[i], 'i')
-		     items.each(function () {
-			var subj = $(this)
-			if (subj.text().search(re) != -1) {
-			   if (subj.hasClass('penLevel2')) {
+         clearTimeout(t)
+         t = setTimeout(
+            function () {
+               var searchPhrase = input.val()
+               var items = $('.penSetting')
+               if (searchPhrase.length > 1) {
+                  items.hide()
+                  searchArray = searchPhrase.split(' ')
+                  for (var i = 0; i < searchArray.length; i++) {
+                     var re = new RegExp(searchArray[i], 'i')
+                     items.each(function () {
+                        var subj = $(this)
+                        if (subj.text().search(re) != -1) {
+                           if (subj.hasClass('penLevel2')) {
                               subj.show()
                               subj.prevAll('.penLevel1:first').show()
-			   } else if (subj.hasClass('penLevel3')) {
+                           } else if (subj.hasClass('penLevel3')) {
                               subj.show()
                               subj.prevAll('.penLevel2:first').show()
                               subj.prevAll('.penLevel1:first').show()
-			   }
-			}
-		     })
-		  }
-	       } else {
-		  items.show()
-	       }
-	    }, 200)
+                           }
+                        }
+                     })
+						}
+               } else {
+                  items.show()
+               }
+            }, 200)
       })
 
 }
@@ -435,15 +444,15 @@ function toggleBookmarks() {
          div.append(sorted[i].e)
       }
       if (db.cfg.bmPreview) {
-	  div.find('a.penBmLink').each(
-	     function () {
-                var subj = $(this)
-                apply_isense(subj, function () {
-                   if (db.cfg.bmAutoDel)
-                      subj.closest('div').find('a:first').click()
-                })
-             })
-      }
+         div.find('a.penBmLink').each(
+            function () {
+               var subj = $(this)
+               apply_isense(subj, function () {
+                  if (db.cfg.bmAutoDel)
+                     subj.closest('div').find('a:first').click()
+               })
+            })
+            }
       return div
    }
    if ($('#penBms').length == 0) {
@@ -567,7 +576,7 @@ function toggleSettings () {
                      defaultSetting($(this))
                }
             )
-         })
+               })
 
       var genControls = $('<span><br /><button>' + i18n.allDefault + '</button> <input id="penSettingsSearch" size="33" style="float:right"><br /></span>')
       genControls.find('button').click(
@@ -593,7 +602,7 @@ function toggleSettings () {
                db.cfg[id] = e.val()
             }
          })
-   }
+         }
 
    if ($('#penSettings').length == 0) {
       $.ui.window(
@@ -626,7 +635,7 @@ function withSelection (subj, f) {
             this.value = before.concat(f(selection), after)
          }
       })
-}
+      }
 
 function setupEnv (db, env) {
    var isNight = true
@@ -692,9 +701,9 @@ function setupEnv (db, env) {
                   subj.find(iom.form.status).text(errResult)
                   errResult = responseText.match(/<h1.*?>(.*?)<br/)[1]
                   subj.find(iom.form.status).text(errResult)
-		  if (errResult.search(iom.strings.ttErr) != -1) {
-		     resetCaptcha(subj, true)
-		  }
+                  if (errResult.search(iom.strings.ttErr) != -1) {
+                     resetCaptcha(subj, true)
+                  }
                } else {
                   subj.find(iom.form.status).text(i18n.okReloadingNow)
                   window.location.reload(true)
@@ -713,8 +722,8 @@ function setupEnv (db, env) {
       resetCaptcha(env.find(iom.postform), true)
    } else {
       img.click(function (e) {
-	 resetCaptcha($(e.target).closest('form'))
-	 return false
+         resetCaptcha($(e.target).closest('form'))
+         return false
       })
    }
 
@@ -729,29 +738,33 @@ function setupEnv (db, env) {
             $.ui.multiLink([
                [i18n.imgs.unfold,
                 function (e) {
-                   $(iom.post.image).parent().click()
-                   $(e.target).text(
-                      $(e.target).text() == i18n.imgs.unfold ? i18n.imgs.fold : i18n.imgs.unfold
-                   )
+                   $(iom.post.image).each(
+							 function () {
+								 refold($(this).closest(iom.pid).attr('id'))
+							 })
+                      $(e.target).text(
+                         $(e.target).text() == i18n.imgs.unfold ? i18n.imgs.fold : i18n.imgs.unfold
+                      )
                 }],
                [i18n.imgLess.hide,
-                function (e) { $(iom.pid).each(
-                   function () {
-                      if ($(this).find(iom.post.image).length == 0)
-                         $(this).toggle()
-                   })
-                               $(e.target).text(
-                                  $(e.target).text() == i18n.imgLess.hide ? i18n.imgLess.show : i18n.imgLess.hide
-                               )}],
+                function (e) {
+                   $(iom.pid).each(
+                      function () {
+                         if ($(this).find(iom.post.image).length == 0)
+                            $(this).toggle()
+                      })
+                      $(e.target).text(
+                         $(e.target).text() == i18n.imgLess.hide ? i18n.imgLess.show : i18n.imgLess.hide
+                      )}],
                [i18n.citeLess.hide,
                 function (e) { $(iom.pid).each(
                    function () {
                       if ($(this).find(iom.post.backrefs).length == 0)
                          $(this).toggle()
                    })
-                               $(e.target).text(
-                                  $(e.target).text() == i18n.citeLess.hide ? i18n.citeLess.show : i18n.citeLess.hide
-                               )}]
+                   $(e.target).text(
+                      $(e.target).text() == i18n.citeLess.hide ? i18n.citeLess.show : i18n.citeLess.hide
+                   )}]
             ], ' / ', '').css('left', '0')
          )
       }
@@ -841,7 +854,7 @@ function setupEnv (db, env) {
          var recoded = $.xlatb[String.fromCharCode(key.which).toLowerCase()]
          if (recoded) {
             /* Not a perfect piece of code, but
-                  i'm thank you eurekafag (: */
+               i'm thank you eurekafag (: */
             var caret = key.target.selectionStart
             var str = key.target.value
             key.target.value = str.substring(0,caret) + recoded + str.substring(caret)
@@ -872,25 +885,16 @@ function setupEnv (db, env) {
                            $(this).remove()
                         }
                      })
-                  var replacer = $('<span/>').
+                     var replacer = $('<span/>').
                      append($('#cache #'+pid+' '+iom.post.backrefsBlock).clone(true)).
                      append($('#cache #'+pid+' '+iom.post.message).clone(true))
                   replacee.replaceWith(replacer)
                })
                return false
             } else if (db.cfg.imgsUnfold && subj.is('img') ) {
-               if (subj.attr('altsrc')) {
-                  return refold(subj.closest(iom.pid).attr('id'))
-               } else {
-                  try {
-                     if (subj.attr('src').replace(/^.*?(\d+)\w+\.\w+$/,"$1") == subj.closest('a').attr('href').replace(/^.*?(\d+)\.\w+$/,"$1")) {
-                        prepareRefold(subj)
-                        return refold(subj.closest(iom.pid).attr('id'))
-                     }
-                  } catch (err) {}
-               }
+               return refold(subj.closest(iom.pid).attr('id'))
             } else if (subj.parent().is(iom.post.ref) && db.cfg.fastReply) {
-	       var citeSelection = window.getSelection ?  window.getSelection().toString().replace(/\n(.)/,'\n> $1') : ''
+               var citeSelection = window.getSelection ?  window.getSelection().toString().replace(/\n(.)/,'\n> $1') : ''
                showReplyForm(subj.closest(iom.tid).attr('id'), subj.text().replace(i18n.no,'>>') + (citeSelection ? '\n\n> ' + citeSelection : ''))
                return false;
             } else if (db.cfg.handleYTube && subj.is('a') && subj.attr('href').match(ytre)) {
@@ -941,14 +945,14 @@ apply_me = function (messages, isSecondary) {
             tmenu.push([
                i18n.reply, turl])
          trm.replaceWith($.ui.multiLink(tmenu, '', ''))
-	 if (db.cfg.thrdMenuDouble && !isInThread) {
+         if (db.cfg.thrdMenuDouble && !isInThread) {
             var moar = subj.find(iom.thread.moar).clone()
             if (moar.length == 0) {
-	       moar = $('<span class="omittedposts"></span>')
+               moar = $('<span class="omittedposts"></span>')
             }
             tmenu[tmenu.length-1] = [
-	       i18n.replyThat,
-	       function () { showReplyForm(tid) }]
+               i18n.replyThat,
+               function () { showReplyForm(tid) }]
             moar.append($.ui.multiLink(tmenu))
             subj.find(iom.thread.eotNotOp).after(moar)
          }
@@ -1003,28 +1007,28 @@ apply_me = function (messages, isSecondary) {
                }
                messagesCount++
             })
-      }
+            }
    )
 
-   db.cfg.iSense &&
+      db.cfg.iSense &&
       messages.find(iom.anchors).each(
          function () { apply_isense($(this)) }
       )
 
-   for(var objId in db.hidden) {
-      /* It's an low level alternative of toggle method
-          * TODO Rewrite toggle for suitable usage in this
-          * place (may be impossible). */
-      if (objId) {
-         var subj = messages.find('#'+objId)
-         var isThread = objId.search(/t/) == -1 ? false : true
-         if (db.cfg.thrdInThrdLeave && isInThread && isThread )
-            continue
-         subj.css('display', 'none')
-         chktizer(subj, objId, isThread)
-         messages.find('#tiz'+objId).css('display','block')
-      }
-   }
+         for(var objId in db.hidden) {
+            /* It's an low level alternative of toggle method
+             * TODO Rewrite toggle for suitable usage in this
+             * place (may be impossible). */
+            if (objId) {
+               var subj = messages.find('#'+objId)
+               var isThread = objId.search(/t/) == -1 ? false : true
+               if (db.cfg.thrdInThrdLeave && isInThread && isThread )
+                  continue
+               subj.css('display', 'none')
+               chktizer(subj, objId, isThread)
+               messages.find('#tiz'+objId).css('display','block')
+            }
+         }
    for (var objId in db.filtered) {
       var subj = messages.find('#'+objId)
       subj.css('display', 'none')
