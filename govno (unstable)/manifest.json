@@ -1,0 +1,17 @@
+{
+	"name": "Govno 3",
+	"description": "Govno 3 addon aka penochka for 2-ch.ru site",
+	"version": "3.0.8",
+	"permissions": [
+		"tabs",
+		"http://2-ch.ru/*",
+		"http://*.2-ch.ru/*"
+	],
+	"content_scripts": [
+		{
+			"matches": ["http://2-ch.ru/*", "http://*.2-ch.ru/*"],
+			"run_at": "document_start",
+			"js": ["govno.js"]
+		}
+	]
+}
