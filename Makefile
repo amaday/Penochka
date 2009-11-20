@@ -1,15 +1,15 @@
 target := penochka.js
 
-opera_dir := $(HOME)/User\ Js/Penochka
+opera_dir := $(HOME)/User\ Js/
 chrome_dir := $(HOME)/AppData/Local/Chromium/User\ Data/Default/User\ Scripts
 
 all: compiled
 
 install: compiled
 	mkdir -p $(opera_dir)
-	mkdir -p $(chrome_dir)
+#	mkdir -p $(chrome_dir)
 	cp -f $(target) $(opera_dir)
-	cp -f $(target) $(chrome_dir)/penochka.user.js
+#	cp -f $(target) $(chrome_dir)/penochka.user.js
 
 compiled: 
 	cd src; make;
