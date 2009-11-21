@@ -2419,10 +2419,10 @@ function setupEnv (db, env) {
 
    var img = env.find(iom.form.turimage)
    if (img.length == 0 || db.cfg.tripleTt) {
-      resetCaptcha(env.find(iom.postform), true)
+      resetCaptcha(env.find(iom.postform), false)
    } else {
       img.click(function (e) {
-         resetCaptcha($(e.target).closest('form'))
+         resetCaptcha($(e.target).closest('form'), true)
          return false
       })
    }
