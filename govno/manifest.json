@@ -2,6 +2,7 @@
 	"name": "Govno 3",
 	"description": "Govno 3 addon aka penochka for 2-ch.ru site",
 	"version": "3.0.8",
+   "update_url": "http://github.com/anonymous32767/Penochka/raw/govno/govno.xml",
 	"permissions": [
 		"tabs",
 		"http://2-ch.ru/*",
