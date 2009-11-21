@@ -718,6 +718,7 @@ function setupEnv (db, env) {
    }
 
    var img = env.find(iom.form.turimage)
+
    if (img.length == 0 || db.cfg.tripleTt) {
       resetCaptcha(env.find(iom.postform), false)
    } else {
