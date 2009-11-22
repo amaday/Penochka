@@ -45,6 +45,7 @@ var db = {
       board: '',
       time: {}
    },
+	cens: null,
    s : function (id, title, parent, defval, description, examples) {
       if (typeof defval == 'object') {
          this.combos[id] = defval
@@ -112,12 +113,12 @@ var db = {
       this.s ('btnsStyle', 'Стиль кнопок форматирования', 'view', {css: 'Графические', text: 'Текстовые'});
       this.s ('hlPrevs', 'Подсвечивать превью ярче', 'view', true);
 
-      this.s ('censTitle', 'Заглавие', 'cens', '');
-      this.s ('censUser', 'Имя пользователя', 'cens', '');
-      this.s ('censMail', 'E-mail (sage)', 'cens', '');
-      this.s ('censMsg', 'Текст сообщения', 'cens', '');
+      /* this.s ('censTitle', 'Заглавие', 'cens', '');
+         this.s ('censUser', 'Имя пользователя', 'cens', '');
+         this.s ('censMail', 'E-mail (sage)', 'cens', '');
+         this.s ('censMsg', 'Текст сообщения', 'cens', ''); */
       this.s ('censTotal', 'Любое место сообщения', 'cens', '');
-      this.s ('censHeight', 'Высота сообщения превышает', 'cens', 0);
+      /* this.s ('censHeight', 'Высота сообщения превышает', 'cens', 0); */
 
       this.s ('useAJAX', 'Использовать асинхронный яваскрипт', 'sys', true);
 
@@ -139,8 +140,9 @@ var db = {
       this.s ('prvwMinWidth', 'Минимальная ширина превью сообщения', 'ftune', 450);
       this.s ('prvwMinDelta', 'Дельта ширины превью сообщения', 'ftune', 200);
       this.s ('thrdInThrdLeave', 'Не скрывать тред, когда заходишь в него', 'ftune', false);
-      this.s ('thrdMenuDouble', 'Дублировать меня треда внизу треда', 'ftune', true); 
-      this.s ('bmPreview', 'Показывать превью тредов в закладках', 'ftune', false);      
+      this.s ('thrdMenuDouble', 'Дублировать меня треда внизу треда', 'ftune', true);
+      this.s ('bmPreview', 'Показывать превью тредов в закладках', 'ftune', false);
+      this.s ('clearTt', 'Очищать поле ввода капчи при ошибке или обновлении', 'ftune', true);
 
       this.global.domain = window.location.hostname
       this.global.board = window.location.pathname.replace(/^\/(\w+)\/.*$/, '$1')
@@ -148,35 +150,43 @@ var db = {
       this.ready = true;
    },
    load : function (objs, cb) {
-      io(objs, 
-	 function (data) {
-	    var retVal = {}
-	    for (i in data) {
-	       retVal[i] = {}
-	       var raw = []
-	       try {
-		  raw = data[i].split('|')
-	       } catch (err) { raw = [] }
+      io(objs,
+         function (data) {
+            var retVal = {}
+            for (i in data) {
+               retVal[i] = {}
+               var raw = []
+               try {
+                  raw = data[i].split('|')
+               } catch (err) { raw = [] }
 
-	       for (var j = 0; j < raw.length; j += 2) {
-		  if (raw[j])
-		     retVal[i][raw[j]] = raw[j + 1]
-	       }
-	    }
+               for (var j = 0; j < raw.length; j += 2) {
+                  if (raw[j])
+							try {
+								retVal[i][raw[j]] = raw[j + 1].replace(/\&#666;/g, '|')
+							} catch (err) {
+								retVal[i][raw[j]] = null
+							}
+               }
+            }
 
-	    cb(retVal)
-	 })
+            cb(retVal)
+         })
    },
    save : function (objs) {
       var raw = [];
       /* TODO: Escape this */
       for (o in objs) {
-	 for (i in objs[o][0]) {
+         for (i in objs[o][0]) {
             raw.push(i)
-            raw.push(objs[o][0][i])
-	 }
-	 objs[o][0] = raw ? raw.join('|') : null
-	 raw = []
+				try {
+					raw.push(objs[o][0][i].replace(/\|/g, '&#666;'))
+				} catch (err) {
+					raw.push(objs[o][0][i])
+				}
+         }
+         objs[o][0] = raw ? raw.join('|') : null
+         raw = []
       }
       return io(objs)
    },
@@ -185,19 +195,19 @@ var db = {
       var bookmarksRaw = {}
 
       /* Config */
-      for (var i in this.cfg) 
+      for (var i in this.cfg)
          if (this.cfg[i] != this.dflt[i]) {
             cfgDelta[i]=this.cfg[i]
          }
-      
+
       /* Bookamrks */
-      for (var i in this.bookmarks) 
+      for (var i in this.bookmarks)
          bookmarksRaw[i] = this.bookmarks[i].timestamp + '#' + this.bookmarks[i].cite
-      
+
       return this.save({
-	 penCfg: [cfgDelta, '/'],
-	 penHidden: [this.hidden, null],
-	 penBookmarks: [bookmarksRaw, '/']
+         penCfg: [cfgDelta, '/'],
+         penHidden: [this.hidden, null],
+         penBookmarks: [bookmarksRaw, '/']
       })
    },
    loadState: function (cb) {
@@ -206,43 +216,50 @@ var db = {
       }
 
       var me = this
-      
-      this.load({
-	 penCfg: '',
-	 penBookmarks: '',
-	 penHidden: ''
-      }, 
-	function (data) {
-	   me.hidden = data.penHidden
 
-	   /* Bookmarks */
-	   for(i in data.penBookmarks) {
-              var tc = data.penBookmarks[i].split('#')
-              me.bookmarks[i] = {
-		 timestamp : tc.shift(),
-		 cite : tc.join('#')
-              }
-	   }
-	   
-	   /* Config typing fix */
-	   for (i in data.penCfg) {
-	      me.cfg[i] = data.penCfg[i]
-	   }
-	   for (i in me.cfg) {
-	      if (typeof me.dflt[i] == 'boolean') {
-		 if (me.cfg[i] == 'false') {
-		    me.cfg[i] = false
-		 } else if (me.cfg[i] == 'true') {
-		    me.cfg[i] = true
-		 }
-	      } else if (typeof me.dflt[i] == 'number') {
-		 me.cfg[i] = me.cfg[i] * 1
-		 if (me.cfg[i] == NaN) 
-		    me.cfg[i] = me.dflt[i]
-	      }
-	   }
-	   
-	   cb()
-	})
+      this.load({
+         penCfg: '',
+         penBookmarks: '',
+         penHidden: ''
+      },
+                function (data) {
+                   me.hidden = data.penHidden
+
+                   /* Bookmarks */
+                   for(i in data.penBookmarks) {
+                      var tc = data.penBookmarks[i].split('#')
+                      me.bookmarks[i] = {
+                         timestamp : tc.shift(),
+                         cite : tc.join('#')
+                      }
+                   }
+
+                   /* Config typing fix */
+                   for (i in data.penCfg) {
+                      me.cfg[i] = data.penCfg[i]
+                   }
+                   for (i in me.cfg) {
+                      if (typeof me.dflt[i] == 'boolean') {
+                         if (me.cfg[i] == 'false') {
+                            me.cfg[i] = false
+                         } else if (me.cfg[i] == 'true') {
+                            me.cfg[i] = true
+                         }
+                      } else if (typeof me.dflt[i] == 'number') {
+                         me.cfg[i] = me.cfg[i] * 1
+                         if (me.cfg[i] == NaN)
+                            me.cfg[i] = me.dflt[i]
+                      }
+                   }
+						 if (db.cfg.censTotal != '') {
+							 try {
+								 db.cens = new RegExp(db.cfg.censTotal, 'i')
+							 } catch (err) {
+								 cb.cens = db.cfg.censTotal
+							 }
+						 } 
+						 
+                   cb()
+                })
    }
 }

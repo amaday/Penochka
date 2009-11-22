@@ -58,7 +58,7 @@ jQuery.fn.extend({
 /* */
 /*
   For localization to your language simply replace this table.
- */
+*/
 var xlatb =
    {й: 'q', ц: 'w', у: 'e', к: 'r', е: 't', н: 'y', г: 'u',
     ш: 'i', щ: 'o', з: 'p', ф: 'a', ы: 's', в: 'd', а: 'f',
@@ -180,7 +180,7 @@ function dvach (onload, events) {
 
    function process(cloned) {
       if (!$.references)
-	 $.references = {}
+         $.references = {}
       cloned.find(iom.anchors).each(
          function () {
             var subj = $(this)
@@ -195,22 +195,27 @@ function dvach (onload, events) {
             var spid = subj.findc(iom.pid).attr('id')
             subj.attr('refid', pid)
             subj.attr('refurl', refurl)
-	    try {
+            try {
                $.references[pid][spid] = spid
-	    } catch (err) {
-	       $.references[pid] = {}
-	       $.references[pid][spid] = spid
-	    }
+            } catch (err) {
+               $.references[pid] = {}
+               $.references[pid][spid] = spid
+            }
          })
-      cloned.find(iom.thread.moar).each(
-         function () {
-            $(this).html($(this).text().split('.')[0]+'. ')
-         })
-      /* Cannot delete posts while in thread bug (#71) workaround  */
-      cloned.submit(
-	 function () {
-	    cloned.find(iom.tid+' form').remove()
-	 })
+         cloned.find(iom.thread.moar).each(
+            function () {
+               $(this).html($(this).text().split('.')[0]+'. ')
+            })
+            /* Cannot delete posts while in thread bug (#71) workaround  */
+            cloned.submit(
+               function () {
+                  var delForm = $('<form action="/'+db.global.board+'/wakaba.pl" method="post">').
+                     append($('input:checked').clone()).
+                     append($('input[type=password]:last,input[name=fileonly]').clone()).
+                     append($('<input type="hidden" name="task" value="delete" /><input value="Del" type="submit" />'))
+                  delForm.submit()
+                  return false
+               })
    }
 
    jQuery.fn.extend({
@@ -226,12 +231,12 @@ function dvach (onload, events) {
          var lnum = $('#' + tid + ' ' + iom.thread.eot).findc(iom.pid).attr('id').replace('p','')
          /* Reserved: manually switch to thread gb2
 
-         form.find('input[name=gb2][value=board]').removeAttr('checked')
-         form.find('input[name=gb2][value=thread]').attr('checked','checked') */
+            form.find('input[name=gb2][value=board]').removeAttr('checked')
+            form.find('input[name=gb2][value=thread]').attr('checked','checked') */
          form.tuneForm()
          form.prepend('<input type="hidden" name="parent" value="' + tnum + '" />')
-	 var turingTest = form.find(iom.form.turimage)
-	 if (turingTest.length == 0)
+         var turingTest = form.find(iom.form.turimage)
+         if (turingTest.length == 0)
             turingTest = form.find('#captchadiv img')
 
          turingTest.attr(
@@ -251,8 +256,8 @@ function dvach (onload, events) {
             {},
             function (a,b,c) {
                if (b != 'success') {
-		  if (ef)
-		     ef()
+                  if (ef)
+                     ef()
                   return
                }
                var cloned = $(e).find('#delform')
@@ -268,7 +273,7 @@ function dvach (onload, events) {
          return '/' + db.global.board + '/res/'+tid.replace(/\D/g, '')+'.html'
       },
       urltid: function (url) {
-	 return 't' + url.replace(/.*\/(\d+)\.html/,'$1')
+         return 't' + url.replace(/.*\/(\d+)\.html/,'$1')
       }
    });
 
@@ -292,7 +297,7 @@ function dvach (onload, events) {
          } else {
             var obj = idobj
          }
-	 obj.find('a[name]').removeAttr('name')
+         obj.find('a[name]').removeAttr('name')
          obj.addClass(db.cfg.hlPrevs ? 'highlight' : 'reply')
          obj.attr('style','position:absolute; top:' + y +
                   'px; left:' + x + 'px;display:block;')
@@ -337,7 +342,7 @@ function dvach (onload, events) {
                lastA = subj
                j++
             })
-         lastA.addClass('last')
+            lastA.addClass('last')
          return res
       },
       tizer :
@@ -379,19 +384,19 @@ jQuery.fn.extend({
    ok: function(db, env, msg, aft) {
       /* Защита от повторного вызова скрипта. */
       if($('#cache').length > 0)
-	 return
-      
+         return
+
       try {
          document = unsafeWindow.document
-	 scope.timer.diff('page load');
-	 scope.timer.init();
+         scope.timer.diff('page load');
+         scope.timer.init();
          converge = dvach(function() { env(db, $(unsafeWindow.document)) })
          converge($(unsafeWindow.document), msg, aft)
       } catch (err) {
          this.ready(
             function () {
-	       scope.timer.diff('page load');
-	       scope.timer.init();
+               scope.timer.diff('page load');
+               scope.timer.init();
                var subj = $(this)
                converge = dvach(function() { env(db, subj) })
                converge(subj, msg, aft)

@@ -142,6 +142,8 @@ function toggleThread(id, useAjax) {
 function toggleVisible(id) {
    $('#'+id).toggle()
    $('#tiz'+id).toggle()
+	if (db.filtered[id])
+		return
    if (db.hidden[id]) {
       delete db.hidden[id]
    } else {
@@ -159,7 +161,7 @@ function swapAttr(obj, a1, a2) {
 
 function prepareRefold(subj) {
    var altsrc = subj.closest('a').attr('href')
-   var althw = subj.closest(iom.pid).find(iom.post.imageinfo).text().match(/(\d+)x(\d+)/) 
+   var althw = subj.closest(iom.pid).find(iom.post.imageinfo).text().match(/(\d+)x(\d+)/)
    var w = subj.attr('width')
    var h = subj.attr('height')
    subj.attr('altsrc', altsrc)
@@ -358,7 +360,7 @@ function resetCaptcha(form, needFocus) {
          return false
       })
    form.find(iom.form.turtest).removeAttr('onfocus')
-   if (needFocus) {
+   if (db.cfg.clearTt && needFocus) {
       form.find(iom.form.turtest).val('')
       form.find(iom.form.turtest)[0].focus()
    }
@@ -391,7 +393,7 @@ function applySearch (input) {
                            }
                         }
                      })
-						}
+                        }
                } else {
                   items.show()
                }
@@ -740,9 +742,9 @@ function setupEnv (db, env) {
                [i18n.imgs.unfold,
                 function (e) {
                    $(iom.post.image).each(
-							 function () {
-								 refold($(this).closest(iom.pid).attr('id'))
-							 })
+                      function () {
+                         refold($(this).closest(iom.pid).attr('id'))
+                      })
                       $(e.target).text(
                          $(e.target).text() == i18n.imgs.unfold ? i18n.imgs.fold : i18n.imgs.unfold
                       )
@@ -894,9 +896,11 @@ function setupEnv (db, env) {
                return false
             } else if (db.cfg.imgsUnfold && subj.is('img') ) {
                return refold(subj.closest(iom.pid).attr('id'))
-            } else if (subj.parent().is(iom.post.ref) && db.cfg.fastReply) {
-               var citeSelection = window.getSelection ?  window.getSelection().toString().replace(/\n(.)/,'\n> $1') : ''
-               showReplyForm(subj.closest(iom.tid).attr('id'), subj.text().replace(i18n.no,'>>') + (citeSelection ? '\n\n> ' + citeSelection : ''))
+            } else if (subj.parent().is(iom.post.ref)) {
+               if (db.cfg.fastReply || isInThread) {
+                  var citeSelection = window.getSelection ?  window.getSelection().toString().replace(/\n(.)/,'\n> $1') : ''
+                  showReplyForm(subj.closest(iom.tid).attr('id'), subj.text().replace(i18n.no,'>>') + (citeSelection ? '\n\n> ' + citeSelection : ''))
+               }
                return false;
             } else if (db.cfg.handleYTube && subj.is('a') && subj.attr('href').match(ytre)) {
                if (!subj.attr('unfolden')) {
@@ -969,7 +973,7 @@ apply_me = function (messages, isSecondary) {
                   ], ' ', ''))
                }
                /* Censore */
-               if(db.cfg.censTitle != '' || db.cfg.censUser != '' || db.cfg.censMail != '' || db.cfg.censMsg != '' || db.cfg.censTotal != '' || db.cfg.censHeight) {
+               /* if(db.cfg.censTitle != '' || db.cfg.censUser != '' || db.cfg.censMail != '' || db.cfg.censMsg != '' || db.cfg.censTotal != '' || db.cfg.censHeight) {
                   var censf = false;
                   if (db.cfg.censTitle &&
                       subj.find(iom.post.title).text().search(db.cfg.censTitle) != -1) {
@@ -994,7 +998,11 @@ apply_me = function (messages, isSecondary) {
                   if(censf) {
                      db.filtered[pid]=1
                   }
-               }
+               }*/
+					if (db.cens) {
+						if (subj.text().match(db.cens))
+							 db.filtered[pid]=1
+					}
                if (db.cfg.fwdRefs && $.references[pid]) {
                   var refs =
                      function () {
@@ -1040,7 +1048,10 @@ apply_me = function (messages, isSecondary) {
 
 function postSetup () {
    if (db.cfg.thrdMove && $(iom.form.parent).length > 0) {
-      showReplyForm($(iom.tid).attr('id'), null, null, true, true)
+      var cite = null
+      if (match = /#i([0-9]+)/.exec(document.location.toString()))
+         cite = '>>' + match[1]
+      showReplyForm($(iom.tid).attr('id'), cite, null, true, true)
    }
    $(iom.thread.header).text(i18n.totalMsgs+messagesCount)
    scope.timer.diff('penochka sync');
