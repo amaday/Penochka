@@ -1110,7 +1110,7 @@ jQuery.fn.extend({
 /* */
 /*
   For localization to your language simply replace this table.
- */
+*/
 var xlatb =
    {й: 'q', ц: 'w', у: 'e', к: 'r', е: 't', н: 'y', г: 'u',
     ш: 'i', щ: 'o', з: 'p', ф: 'a', ы: 's', в: 'd', а: 'f',
@@ -1232,7 +1232,7 @@ function dvach (onload, events) {
 
    function process(cloned) {
       if (!$.references)
-	 $.references = {}
+         $.references = {}
       cloned.find(iom.anchors).each(
          function () {
             var subj = $(this)
@@ -1247,22 +1247,27 @@ function dvach (onload, events) {
             var spid = subj.findc(iom.pid).attr('id')
             subj.attr('refid', pid)
             subj.attr('refurl', refurl)
-	    try {
+            try {
                $.references[pid][spid] = spid
-	    } catch (err) {
-	       $.references[pid] = {}
-	       $.references[pid][spid] = spid
-	    }
+            } catch (err) {
+               $.references[pid] = {}
+               $.references[pid][spid] = spid
+            }
          })
-      cloned.find(iom.thread.moar).each(
-         function () {
-            $(this).html($(this).text().split('.')[0]+'. ')
-         })
-      /* Cannot delete posts while in thread bug (#71) workaround  */
-      cloned.submit(
-	 function () {
-	    cloned.find(iom.tid+' form').remove()
-	 })
+         cloned.find(iom.thread.moar).each(
+            function () {
+               $(this).html($(this).text().split('.')[0]+'. ')
+            })
+            /* Cannot delete posts while in thread bug (#71) workaround  */
+            cloned.submit(
+               function () {
+                  var delForm = $('<form action="/'+db.global.board+'/wakaba.pl" method="post">').
+                     append($('input:checked').clone()).
+                     append($('input[type=password]:last,input[name=fileonly]').clone()).
+                     append($('<input type="hidden" name="task" value="delete" /><input value="Del" type="submit" />'))
+                  delForm.submit()
+                  return false
+               })
    }
 
    jQuery.fn.extend({
@@ -1278,12 +1283,12 @@ function dvach (onload, events) {
          var lnum = $('#' + tid + ' ' + iom.thread.eot).findc(iom.pid).attr('id').replace('p','')
          /* Reserved: manually switch to thread gb2
 
-         form.find('input[name=gb2][value=board]').removeAttr('checked')
-         form.find('input[name=gb2][value=thread]').attr('checked','checked') */
+            form.find('input[name=gb2][value=board]').removeAttr('checked')
+            form.find('input[name=gb2][value=thread]').attr('checked','checked') */
          form.tuneForm()
          form.prepend('<input type="hidden" name="parent" value="' + tnum + '" />')
-	 var turingTest = form.find(iom.form.turimage)
-	 if (turingTest.length == 0)
+         var turingTest = form.find(iom.form.turimage)
+         if (turingTest.length == 0)
             turingTest = form.find('#captchadiv img')
 
          turingTest.attr(
@@ -1303,8 +1308,8 @@ function dvach (onload, events) {
             {},
             function (a,b,c) {
                if (b != 'success') {
-		  if (ef)
-		     ef()
+                  if (ef)
+                     ef()
                   return
                }
                var cloned = $(e).find('#delform')
@@ -1320,7 +1325,7 @@ function dvach (onload, events) {
          return '/' + db.global.board + '/res/'+tid.replace(/\D/g, '')+'.html'
       },
       urltid: function (url) {
-	 return 't' + url.replace(/.*\/(\d+)\.html/,'$1')
+         return 't' + url.replace(/.*\/(\d+)\.html/,'$1')
       }
    });
 
@@ -1344,7 +1349,7 @@ function dvach (onload, events) {
          } else {
             var obj = idobj
          }
-	 obj.find('a[name]').removeAttr('name')
+         obj.find('a[name]').removeAttr('name')
          obj.addClass(db.cfg.hlPrevs ? 'highlight' : 'reply')
          obj.attr('style','position:absolute; top:' + y +
                   'px; left:' + x + 'px;display:block;')
@@ -1389,7 +1394,7 @@ function dvach (onload, events) {
                lastA = subj
                j++
             })
-         lastA.addClass('last')
+            lastA.addClass('last')
          return res
       },
       tizer :
@@ -1431,19 +1436,19 @@ jQuery.fn.extend({
    ok: function(db, env, msg, aft) {
       /* Защита от повторного вызова скрипта. */
       if($('#cache').length > 0)
-	 return
-      
+         return
+
       try {
          document = unsafeWindow.document
-	 scope.timer.diff('page load');
-	 scope.timer.init();
+         scope.timer.diff('page load');
+         scope.timer.init();
          converge = dvach(function() { env(db, $(unsafeWindow.document)) })
          converge($(unsafeWindow.document), msg, aft)
       } catch (err) {
          this.ready(
             function () {
-	       scope.timer.diff('page load');
-	       scope.timer.init();
+               scope.timer.diff('page load');
+               scope.timer.init();
                var subj = $(this)
                converge = dvach(function() { env(db, subj) })
                converge(subj, msg, aft)
@@ -1498,6 +1503,7 @@ var db = {
       board: '',
       time: {}
    },
+	cens: null,
    s : function (id, title, parent, defval, description, examples) {
       if (typeof defval == 'object') {
          this.combos[id] = defval
@@ -1565,12 +1571,12 @@ var db = {
       this.s ('btnsStyle', 'Стиль кнопок форматирования', 'view', {css: 'Графические', text: 'Текстовые'});
       this.s ('hlPrevs', 'Подсвечивать превью ярче', 'view', true);
 
-      this.s ('censTitle', 'Заглавие', 'cens', '');
-      this.s ('censUser', 'Имя пользователя', 'cens', '');
-      this.s ('censMail', 'E-mail (sage)', 'cens', '');
-      this.s ('censMsg', 'Текст сообщения', 'cens', '');
+      /* this.s ('censTitle', 'Заглавие', 'cens', '');
+         this.s ('censUser', 'Имя пользователя', 'cens', '');
+         this.s ('censMail', 'E-mail (sage)', 'cens', '');
+         this.s ('censMsg', 'Текст сообщения', 'cens', ''); */
       this.s ('censTotal', 'Любое место сообщения', 'cens', '');
-      this.s ('censHeight', 'Высота сообщения превышает', 'cens', 0);
+      /* this.s ('censHeight', 'Высота сообщения превышает', 'cens', 0); */
 
       this.s ('useAJAX', 'Использовать асинхронный яваскрипт', 'sys', true);
 
@@ -1592,8 +1598,9 @@ var db = {
       this.s ('prvwMinWidth', 'Минимальная ширина превью сообщения', 'ftune', 450);
       this.s ('prvwMinDelta', 'Дельта ширины превью сообщения', 'ftune', 200);
       this.s ('thrdInThrdLeave', 'Не скрывать тред, когда заходишь в него', 'ftune', false);
-      this.s ('thrdMenuDouble', 'Дублировать меня треда внизу треда', 'ftune', true); 
-      this.s ('bmPreview', 'Показывать превью тредов в закладках', 'ftune', false);      
+      this.s ('thrdMenuDouble', 'Дублировать меня треда внизу треда', 'ftune', true);
+      this.s ('bmPreview', 'Показывать превью тредов в закладках', 'ftune', false);
+      this.s ('clearTt', 'Очищать поле ввода капчи при ошибке или обновлении', 'ftune', true);
 
       this.global.domain = window.location.hostname
       this.global.board = window.location.pathname.replace(/^\/(\w+)\/.*$/, '$1')
@@ -1601,35 +1608,43 @@ var db = {
       this.ready = true;
    },
    load : function (objs, cb) {
-      io(objs, 
-	 function (data) {
-	    var retVal = {}
-	    for (i in data) {
-	       retVal[i] = {}
-	       var raw = []
-	       try {
-		  raw = data[i].split('|')
-	       } catch (err) { raw = [] }
+      io(objs,
+         function (data) {
+            var retVal = {}
+            for (i in data) {
+               retVal[i] = {}
+               var raw = []
+               try {
+                  raw = data[i].split('|')
+               } catch (err) { raw = [] }
 
-	       for (var j = 0; j < raw.length; j += 2) {
-		  if (raw[j])
-		     retVal[i][raw[j]] = raw[j + 1]
-	       }
-	    }
+               for (var j = 0; j < raw.length; j += 2) {
+                  if (raw[j])
+							try {
+								retVal[i][raw[j]] = raw[j + 1].replace(/\&#666;/g, '|')
+							} catch (err) {
+								retVal[i][raw[j]] = null
+							}
+               }
+            }
 
-	    cb(retVal)
-	 })
+            cb(retVal)
+         })
    },
    save : function (objs) {
       var raw = [];
       /* TODO: Escape this */
       for (o in objs) {
-	 for (i in objs[o][0]) {
+         for (i in objs[o][0]) {
             raw.push(i)
-            raw.push(objs[o][0][i])
-	 }
-	 objs[o][0] = raw ? raw.join('|') : null
-	 raw = []
+				try {
+					raw.push(objs[o][0][i].replace(/\|/g, '&#666;'))
+				} catch (err) {
+					raw.push(objs[o][0][i])
+				}
+         }
+         objs[o][0] = raw ? raw.join('|') : null
+         raw = []
       }
       return io(objs)
    },
@@ -1638,19 +1653,19 @@ var db = {
       var bookmarksRaw = {}
 
       /* Config */
-      for (var i in this.cfg) 
+      for (var i in this.cfg)
          if (this.cfg[i] != this.dflt[i]) {
             cfgDelta[i]=this.cfg[i]
          }
-      
+
       /* Bookamrks */
-      for (var i in this.bookmarks) 
+      for (var i in this.bookmarks)
          bookmarksRaw[i] = this.bookmarks[i].timestamp + '#' + this.bookmarks[i].cite
-      
+
       return this.save({
-	 penCfg: [cfgDelta, '/'],
-	 penHidden: [this.hidden, null],
-	 penBookmarks: [bookmarksRaw, '/']
+         penCfg: [cfgDelta, '/'],
+         penHidden: [this.hidden, null],
+         penBookmarks: [bookmarksRaw, '/']
       })
    },
    loadState: function (cb) {
@@ -1659,44 +1674,51 @@ var db = {
       }
 
       var me = this
-      
-      this.load({
-	 penCfg: '',
-	 penBookmarks: '',
-	 penHidden: ''
-      }, 
-	function (data) {
-	   me.hidden = data.penHidden
 
-	   /* Bookmarks */
-	   for(i in data.penBookmarks) {
-              var tc = data.penBookmarks[i].split('#')
-              me.bookmarks[i] = {
-		 timestamp : tc.shift(),
-		 cite : tc.join('#')
-              }
-	   }
-	   
-	   /* Config typing fix */
-	   for (i in data.penCfg) {
-	      me.cfg[i] = data.penCfg[i]
-	   }
-	   for (i in me.cfg) {
-	      if (typeof me.dflt[i] == 'boolean') {
-		 if (me.cfg[i] == 'false') {
-		    me.cfg[i] = false
-		 } else if (me.cfg[i] == 'true') {
-		    me.cfg[i] = true
-		 }
-	      } else if (typeof me.dflt[i] == 'number') {
-		 me.cfg[i] = me.cfg[i] * 1
-		 if (me.cfg[i] == NaN) 
-		    me.cfg[i] = me.dflt[i]
-	      }
-	   }
-	   
-	   cb()
-	})
+      this.load({
+         penCfg: '',
+         penBookmarks: '',
+         penHidden: ''
+      },
+                function (data) {
+                   me.hidden = data.penHidden
+
+                   /* Bookmarks */
+                   for(i in data.penBookmarks) {
+                      var tc = data.penBookmarks[i].split('#')
+                      me.bookmarks[i] = {
+                         timestamp : tc.shift(),
+                         cite : tc.join('#')
+                      }
+                   }
+
+                   /* Config typing fix */
+                   for (i in data.penCfg) {
+                      me.cfg[i] = data.penCfg[i]
+                   }
+                   for (i in me.cfg) {
+                      if (typeof me.dflt[i] == 'boolean') {
+                         if (me.cfg[i] == 'false') {
+                            me.cfg[i] = false
+                         } else if (me.cfg[i] == 'true') {
+                            me.cfg[i] = true
+                         }
+                      } else if (typeof me.dflt[i] == 'number') {
+                         me.cfg[i] = me.cfg[i] * 1
+                         if (me.cfg[i] == NaN)
+                            me.cfg[i] = me.dflt[i]
+                      }
+                   }
+						 if (db.cfg.censTotal != '') {
+							 try {
+								 db.cens = new RegExp(db.cfg.censTotal, 'i')
+							 } catch (err) {
+								 cb.cens = db.cfg.censTotal
+							 }
+						 } 
+						 
+                   cb()
+                })
    }
 }/*
  * vim: ts=3 sts=3 cindent expandtab
@@ -1842,6 +1864,8 @@ function toggleThread(id, useAjax) {
 function toggleVisible(id) {
    $('#'+id).toggle()
    $('#tiz'+id).toggle()
+	if (db.filtered[id])
+		return
    if (db.hidden[id]) {
       delete db.hidden[id]
    } else {
@@ -1859,7 +1883,7 @@ function swapAttr(obj, a1, a2) {
 
 function prepareRefold(subj) {
    var altsrc = subj.closest('a').attr('href')
-   var althw = subj.closest(iom.pid).find(iom.post.imageinfo).text().match(/(\d+)x(\d+)/) 
+   var althw = subj.closest(iom.pid).find(iom.post.imageinfo).text().match(/(\d+)x(\d+)/)
    var w = subj.attr('width')
    var h = subj.attr('height')
    subj.attr('altsrc', altsrc)
@@ -2058,7 +2082,7 @@ function resetCaptcha(form, needFocus) {
          return false
       })
    form.find(iom.form.turtest).removeAttr('onfocus')
-   if (needFocus) {
+   if (db.cfg.clearTt && needFocus) {
       form.find(iom.form.turtest).val('')
       form.find(iom.form.turtest)[0].focus()
    }
@@ -2091,7 +2115,7 @@ function applySearch (input) {
                            }
                         }
                      })
-						}
+                        }
                } else {
                   items.show()
                }
@@ -2418,6 +2442,7 @@ function setupEnv (db, env) {
    }
 
    var img = env.find(iom.form.turimage)
+
    if (img.length == 0 || db.cfg.tripleTt) {
       resetCaptcha(env.find(iom.postform), false)
    } else {
@@ -2439,9 +2464,9 @@ function setupEnv (db, env) {
                [i18n.imgs.unfold,
                 function (e) {
                    $(iom.post.image).each(
-							 function () {
-								 refold($(this).closest(iom.pid).attr('id'))
-							 })
+                      function () {
+                         refold($(this).closest(iom.pid).attr('id'))
+                      })
                       $(e.target).text(
                          $(e.target).text() == i18n.imgs.unfold ? i18n.imgs.fold : i18n.imgs.unfold
                       )
@@ -2593,9 +2618,11 @@ function setupEnv (db, env) {
                return false
             } else if (db.cfg.imgsUnfold && subj.is('img') ) {
                return refold(subj.closest(iom.pid).attr('id'))
-            } else if (subj.parent().is(iom.post.ref) && db.cfg.fastReply) {
-               var citeSelection = window.getSelection ?  window.getSelection().toString().replace(/\n(.)/,'\n> $1') : ''
-               showReplyForm(subj.closest(iom.tid).attr('id'), subj.text().replace(i18n.no,'>>') + (citeSelection ? '\n\n> ' + citeSelection : ''))
+            } else if (subj.parent().is(iom.post.ref)) {
+               if (db.cfg.fastReply || isInThread) {
+                  var citeSelection = window.getSelection ?  window.getSelection().toString().replace(/\n(.)/,'\n> $1') : ''
+                  showReplyForm(subj.closest(iom.tid).attr('id'), subj.text().replace(i18n.no,'>>') + (citeSelection ? '\n\n> ' + citeSelection : ''))
+               }
                return false;
             } else if (db.cfg.handleYTube && subj.is('a') && subj.attr('href').match(ytre)) {
                if (!subj.attr('unfolden')) {
@@ -2668,7 +2695,7 @@ apply_me = function (messages, isSecondary) {
                   ], ' ', ''))
                }
                /* Censore */
-               if(db.cfg.censTitle != '' || db.cfg.censUser != '' || db.cfg.censMail != '' || db.cfg.censMsg != '' || db.cfg.censTotal != '' || db.cfg.censHeight) {
+               /* if(db.cfg.censTitle != '' || db.cfg.censUser != '' || db.cfg.censMail != '' || db.cfg.censMsg != '' || db.cfg.censTotal != '' || db.cfg.censHeight) {
                   var censf = false;
                   if (db.cfg.censTitle &&
                       subj.find(iom.post.title).text().search(db.cfg.censTitle) != -1) {
@@ -2693,7 +2720,11 @@ apply_me = function (messages, isSecondary) {
                   if(censf) {
                      db.filtered[pid]=1
                   }
-               }
+               }*/
+					if (db.cens) {
+						if (subj.text().match(db.cens))
+							 db.filtered[pid]=1
+					}
                if (db.cfg.fwdRefs && $.references[pid]) {
                   var refs =
                      function () {
@@ -2739,7 +2770,10 @@ apply_me = function (messages, isSecondary) {
 
 function postSetup () {
    if (db.cfg.thrdMove && $(iom.form.parent).length > 0) {
-      showReplyForm($(iom.tid).attr('id'), null, null, true, true)
+      var cite = null
+      if (match = /#i([0-9]+)/.exec(document.location.toString()))
+         cite = '>>' + match[1]
+      showReplyForm($(iom.tid).attr('id'), cite, null, true, true)
    }
    $(iom.thread.header).text(i18n.totalMsgs+messagesCount)
    scope.timer.diff('penochka sync');
