@@ -181,7 +181,8 @@ function refold(id) {
       }
       /* This schizophrenic line needed for opera
          to repaint unfolding image */
-      subj.replaceWith(subj.clone())
+      var clonedSubj = subj.clone()
+      subj.replaceWith(clonedSubj)
       /* End of schizophrenic line */
       return false
    } else {
