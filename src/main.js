@@ -181,9 +181,11 @@ function refold(id) {
       }
       /* This schizophrenic line needed for opera
          to repaint unfolding image */
-      var clonedSubj = subj.clone()
-      subj.replaceWith(clonedSubj)
+      subj.replaceWith(subj.clone())
       /* End of schizophrenic line */
+
+      /* Workaround #74 */
+      subj.closest('a').find(':not(img:first)').remove()
       return false
    } else {
       try {
@@ -293,7 +295,7 @@ function sage(env) {
    }
 }
 
-function chktizer(obj, id, tp, sage, filtered) {
+function chktizer(obj, id, tp, needSage, filtered) {
    var tizText = "";
    if ($('#tiz' + id).attr('id') || db.cfg.hidePure)
       return
@@ -311,9 +313,10 @@ function chktizer(obj, id, tp, sage, filtered) {
    }
    var tmenu = [[i18n.show,
                  function () { toggleVisible(id) }]]
-   if (sage) {
+   if (needSage) {
       tmenu.push([i18n.sage,
                   function () {
+                     $(iom.postform+id).remove()
                      showReplyForm(id, tizText, tizer);
                      sage($(iom.postform+id)) }])
    }
@@ -775,8 +778,7 @@ function setupEnv (db, env) {
       if (db.cfg.thrdMove) {
          env.find(iom.postform).hide()
       }
-   }
-   if (db.cfg.idxHide) {
+   } else if (db.cfg.idxHide) {
       env.find(iom.postform).hide()
       env.find('hr').slice(0,1).hide()
    }
@@ -901,8 +903,8 @@ function setupEnv (db, env) {
                if (db.cfg.fastReply || isInThread) {
                   var citeSelection = window.getSelection ?  window.getSelection().toString().replace(/\n(.)/,'\n> $1') : ''
                   showReplyForm(subj.closest(iom.tid).attr('id'), subj.text().replace(i18n.no,'>>') + (citeSelection ? '\n\n> ' + citeSelection : ''))
+                  return false;
                }
-               return false;
             } else if (db.cfg.handleYTube && subj.is('a') && subj.attr('href').match(ytre)) {
                if (!subj.attr('unfolden')) {
                   var ytSize = ({little: 'width="320" height="265"',
