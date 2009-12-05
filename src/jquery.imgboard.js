@@ -363,6 +363,8 @@ function dvach (onload, events) {
    }
 
    return function (obj, f, aft) {
+      obj.find('script:last').remove()
+      obj.find('div.logo img').remove()
       onload()
 
       var threadsRaw = obj.find('#delform');
