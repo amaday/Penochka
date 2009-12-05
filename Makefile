@@ -1,6 +1,6 @@
 target := penochka.js
 
-opera_dir := $(HOME)/User\ Js/
+opera_dir := $(HOME)/User\ Js/Penochka/
 chrome_dir := $(HOME)/AppData/Local/Chromium/User\ Data/Default/User\ Scripts
 
 all: compiled
