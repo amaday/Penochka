@@ -864,7 +864,7 @@ function setupEnv (db, env) {
                i'm thank you eurekafag (: */
             var caret = key.target.selectionStart
             var str = key.target.value
-            key.target.value = str.substring(0,caret) + recoded + str.substring(caret)
+            key.target.value = str.substring(0,caret) + recoded + str.substring(key.target.selectionEnd)
             key.target.selectionStart = caret+1
             key.target.selectionEnd = caret+1
             return false
