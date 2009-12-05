@@ -1871,11 +1871,12 @@ function refold(id) {
       }
       /* This schizophrenic line needed for opera
          to repaint unfolding image */
-      subj.replaceWith(subj.clone())
+      var nsubj = subj.clone()
+      subj.replaceWith(nsubj)
       /* End of schizophrenic line */
 
       /* Workaround #74 */
-      subj.closest('a').find(':not(img:first)').remove()
+      nsubj.closest('a').find('img').slice(1).remove()
       return false
    } else {
       try {
