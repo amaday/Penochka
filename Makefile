@@ -7,13 +7,13 @@ chrome_dir := $(HOME)/AppData/Local/Chromium/User\ Data/Default/User\ Scripts
 
 v = 0.$$(cat $(versionfile)).$$(($$(cat $(buildnumfile)) + 1))
 
-all: build
+all: bld
 
-install: build
+install: bld
 	mkdir -p $(opera_dir)
 	cp -f $(target) $(opera_dir)
 
-build: 
+bld:    $(wildcard src\*.js)
 	echo $$(($$(cat $(buildnumfile)) + 1)) > $(buildnumfile)
 	cd src; make;
 	mv src/penochka.js tmp

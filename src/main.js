@@ -171,8 +171,7 @@ function prepareRefold(subj) {
    subj.removeAttr('width')
 }
 
-function refold(id) {
-   var subj = $('#' + id + ' ' + iom.post.image)
+function refold(subj) {
    if (subj.attr('altsrc')) {
       swapAttr(subj, 'src', 'altsrc')
       swapAttr(subj, 'style', 'altstyle')
@@ -192,7 +191,7 @@ function refold(id) {
       try {
          if (subj.attr('src').replace(/^.*?(\d+)\w+\.\w+$/,"$1") == subj.closest('a').attr('href').replace(/^.*?(\d+)\.\w+$/,"$1")) {
             prepareRefold(subj)
-            return refold(id)
+            return refold(subj)
          }
       } catch (err) {}
    }
@@ -748,7 +747,7 @@ function setupEnv (db, env) {
                 function (e) {
                    $(iom.post.image).each(
                       function () {
-                         refold($(this).closest(iom.pid).attr('id'))
+                         refold($(this))
                       })
                       $(e.target).text(
                          $(e.target).text() == i18n.imgs.unfold ? i18n.imgs.fold : i18n.imgs.unfold
@@ -899,7 +898,7 @@ function setupEnv (db, env) {
                })
                return false
             } else if (db.cfg.imgsUnfold && subj.is('img') ) {
-               return refold(subj.closest(iom.pid).attr('id'))
+               return refold(subj)
             } else if (subj.parent().is(iom.post.ref)) {
                if (db.cfg.fastReply || isInThread) {
                   var citeSelection = window.getSelection ?  window.getSelection().toString().replace(/\n(.)/,'\n> $1') : ''
