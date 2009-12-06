@@ -20,8 +20,7 @@ bld:    $(wildcard src\*.js)
 	mv src/make.bat build.bat
 	sed -e "s/UnStAbLe/$(v)/g" tmp > $(target)
 	git commit -a 
-	#git checkout govno
-
+	
 clean:
 	cd src; make clean
 	rm -f penochka.js
