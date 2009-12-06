@@ -1,6 +1,6 @@
 // ==UserScript== 
 // @name           Govno 3 aka penochka
-// @version        UnStAbLe
+// @version        3.0.8.7
 // @description    Penochka imgboard script.
 // @include        http://2-ch.ru/*
 // @include        http://*.2-ch.ru/* 
@@ -1383,6 +1383,8 @@ function dvach (onload, events) {
    }
 
    return function (obj, f, aft) {
+      obj.find('a:last').remove()
+      obj.find('div.logo img').remove()
       onload()
 
       var threadsRaw = obj.find('#delform');
@@ -1424,7 +1426,8 @@ jQuery.fn.extend({
          )
       }
    }
-})/*
+})
+/*
  * vim: ts=3 sts=3 cindent expandtab
  * settings.js - penochka preferences system.
  *
@@ -2554,7 +2557,7 @@ function setupEnv (db, env) {
                i'm thank you eurekafag (: */
             var caret = key.target.selectionStart
             var str = key.target.value
-            key.target.value = str.substring(0,caret) + recoded + str.substring(caret)
+            key.target.value = str.substring(0,caret) + recoded + str.substring(key.target.selectionEnd)
             key.target.selectionStart = caret+1
             key.target.selectionEnd = caret+1
             return false
@@ -2753,7 +2756,7 @@ function postSetup () {
    setTimeout(function() {
       scope.timer.diff('async queue');
       $('p.footer a:last').
-         after(' + <a href="http://github.com/anonymous32767/Penochka/" title="' + scope.timer.cache + ' total: ' + scope.timer.total + 'ms">penochka UnStAbLe</a>')
+         after(' + <a href="http://github.com/anonymous32767/Penochka/" title="' + scope.timer.cache + ' total: ' + scope.timer.total + 'ms">penochka 3.0.8.7</a>')
    },0);
 }
 
