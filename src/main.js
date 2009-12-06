@@ -1003,7 +1003,7 @@ apply_me = function (messages, isSecondary) {
                   }
                }*/
 					if (db.cens) {
-						if (subj.text().match(db.cens))
+						if (subj.html().match(db.cens))
 							 db.filtered[pid]=1
 					}
                if (db.cfg.fwdRefs && $.references[pid]) {
