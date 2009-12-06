@@ -1,8 +1,11 @@
+buildnumfile := build
+versionfile := version
 target := penochka.js
 
 opera_dir := $(HOME)/User\ Js/Penochka/
 chrome_dir := $(HOME)/AppData/Local/Chromium/User\ Data/Default/User\ Scripts
 
+v = 0.$$(cat $(versionfile)).$$(($$(cat $(buildnumfile)) + 1))
 all: compiled
 
 install: compiled
@@ -12,9 +15,13 @@ install: compiled
 #	cp -f $(target) $(chrome_dir)/penochka.user.js
 
 compiled: 
+	echo $$(($$(cat $(buildnumfile)) + 1)) > $(buildnumfile)
 	cd src; make;
-	mv src/penochka.js $(target)
-	mv src/make.bat make.bat
+	mv src/penochka.js tmp
+	mv src/make.bat build.bat
+	sed -e "s/UnStAbLe/$(v)/g" tmp > $(target)
+	git commit -a 
+	#git checkout govno
 
 clean:
 	cd src; make clean
@@ -22,16 +29,15 @@ clean:
 
 build: 	
 	make compiled
-	sed -e 's/UnStAbLe/$(v)/g' penochka.js > penochka1.js
-	mv penochka1.js penochka.js
 	git add penochka.js
 	git commit -a -m "$(m)"
 	git tag -a $(v) -m "Build $(v)"
-	git push --tags github master
 	make clean
+	git checkout govno
+	git push --tags github master
 	git rm -f penochka.js
 	git commit -a -m "Build $(v) cleanup."
-	git push github master
+	git push --tags github master
 
 commit:
 	make compiled
