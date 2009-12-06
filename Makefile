@@ -6,15 +6,14 @@ opera_dir := $(HOME)/User\ Js/Penochka/
 chrome_dir := $(HOME)/AppData/Local/Chromium/User\ Data/Default/User\ Scripts
 
 v = 0.$$(cat $(versionfile)).$$(($$(cat $(buildnumfile)) + 1))
-all: compiled
 
-install: compiled
+all: build
+
+install: build
 	mkdir -p $(opera_dir)
-#	mkdir -p $(chrome_dir)
 	cp -f $(target) $(opera_dir)
-#	cp -f $(target) $(chrome_dir)/penochka.user.js
 
-compiled: 
+build: 
 	echo $$(($$(cat $(buildnumfile)) + 1)) > $(buildnumfile)
 	cd src; make;
 	mv src/penochka.js tmp
@@ -27,7 +26,7 @@ clean:
 	cd src; make clean
 	rm -f penochka.js
 
-build: 	
+release: 	
 	make compiled
 	git add penochka.js
 	git commit -a -m "$(m)"
