@@ -28,19 +28,6 @@ clean:
 	cd src; make clean
 	rm -f penochka.js
 
-release: 	
-	make compiled
-	git add penochka.js
-	git commit -a -m "$(m)"
-	git tag -a $(v) -m "Build $(v)"
-	make clean
-	git checkout govno
-	git push --tags github master
-	git rm -f penochka.js
-	git commit -a -m "Build $(v) cleanup."
-	git push --tags github master
-
-commit:
-	make compiled
-	git commit -a -m "$(m)"
-	git push github master
+update:
+	git push github3 master
+	git push github3 govno
