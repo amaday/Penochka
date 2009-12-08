@@ -1,6 +1,6 @@
 buildnumfile := build
 versionfile := version
-target := penochka.js
+target := penochka.tmp
 
 opera_dir := $(HOME)/User\ Js/Penochka/
 chrome_dir := $(HOME)/AppData/Local/Chromium/User\ Data/Default/User\ Scripts
