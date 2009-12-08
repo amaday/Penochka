@@ -8,6 +8,7 @@ VPATH = ./
 
 unstable: 
 	echo $$(($$(cat $(buildnumfile)) + 1)) > $(buildnumfile)
+	mv penochka.tmp penochka.js
 	sed -e "s/UnStAbLe/$(v)/g" tmp | sed -e "s/penochka/govno/g" > $(target)
 	cp $(target) govno\ \(unstable\)/govno.js 
 	sed -e "s/version='[0-9\.]\+'/version='$(v)'/g" govno_unstable.xml > tmp1
