@@ -1,6 +1,6 @@
 // ==UserScript== 
 // @name           Govno 3 aka govno
-// @version        3.0.8.32
+// @version        3.0.8.33
 // @description    Penochka imgboard script.
 // @include        http://2-ch.ru/*
 // @include        http://*.2-ch.ru/* 
@@ -1383,8 +1383,6 @@ function dvach (onload, events) {
    }
 
    return function (obj, f, aft) {
-      obj.find('a:last').remove()
-      obj.find('div.logo img').remove()
       onload()
 
       var threadsRaw = obj.find('#delform');
@@ -1547,6 +1545,7 @@ var db = {
          this.s ('censMail', 'E-mail (sage)', 'cens', '');
          this.s ('censMsg', 'Текст сообщения', 'cens', ''); */
       this.s ('censTotal', 'Любое место сообщения', 'cens', '');
+      this.s ('censPage', 'Элементы страницы', 'cens', 'a:last, div.logo img, center hr, center a[target], center br');
       /* this.s ('censHeight', 'Высота сообщения превышает', 'cens', 0); */
 
       this.s ('useAJAX', 'Использовать асинхронный яваскрипт', 'sys', true);
@@ -1691,7 +1690,8 @@ var db = {
                    cb()
                 })
    }
-}/*
+}
+/*
  * vim: ts=3 sts=3 cindent expandtab
  *
  * govno - Various extensions for imageboards,
@@ -2337,6 +2337,8 @@ function withSelection (subj, f) {
       }
 
 function setupEnv (db, env) {
+   $(db.cfg.censPage).remove() 
+        
    var isNight = true
    var isInThread = $(iom.form.parent).length > 0 ? true : false
    var thm = db.cfg.nightTime.match(/(\d+)\D+(\d+)\D+(\d+)\D+(\d+)/)
@@ -2755,7 +2757,7 @@ function postSetup () {
    setTimeout(function() {
       scope.timer.diff('async queue');
       $('p.footer a:last').
-         after(' + <a href="http://github.com/anonymous32767/Penochka/" title="' + scope.timer.cache + ' total: ' + scope.timer.total + 'ms">govno 3.0.8.32</a>')
+         after(' + <a href="http://github.com/anonymous32767/Penochka/" title="' + scope.timer.cache + ' total: ' + scope.timer.total + 'ms">govno 3.0.8.33</a>')
    },0);
 }
 
