@@ -644,6 +644,8 @@ function withSelection (subj, f) {
       }
 
 function setupEnv (db, env) {
+   $(db.cfg.censPage).remove() 
+        
    var isNight = true
    var isInThread = $(iom.form.parent).length > 0 ? true : false
    var thm = db.cfg.nightTime.match(/(\d+)\D+(\d+)\D+(\d+)\D+(\d+)/)
