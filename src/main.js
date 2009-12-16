@@ -1025,7 +1025,7 @@ apply_me = function (messages, isSecondary) {
       var subj = messages.find('#'+objId)
       subj.css('display', 'none')
 		alert(objId+' '+objId.search('p')==-1)
-      chktizer(subj, objId, objId.search('p')==-1, false, true)
+      chktizer(subj, objId, (objId.search('p')==-1), false, true)
       messages.find('#tiz'+objId).css('display','block')
    }
 }
