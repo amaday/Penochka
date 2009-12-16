@@ -978,35 +978,13 @@ apply_me = function (messages, isSecondary) {
                   ], ' ', ''))
                }
                /* Censore */
-               /* if(db.cfg.censTitle != '' || db.cfg.censUser != '' || db.cfg.censMail != '' || db.cfg.censMsg != '' || db.cfg.censTotal != '' || db.cfg.censHeight) {
-                  var censf = false;
-                  if (db.cfg.censTitle &&
-                      subj.find(iom.post.title).text().search(db.cfg.censTitle) != -1) {
-                     censf = true
-                  }
-                  if (db.cfg.censUser &&
-                      subj.find(iom.post.poster).text().search(db.cfg.censTitle) != -1) {
-                     censf = true
-                  }
-                  if (db.cfg.censMail &&
-                      subj.find(iom.post.email).length > 0 && subj.find(iom.post.email).attr('href').search(db.cfg.censMail) != -1) {
-                     censf = true
-                  }
-                  if (db.cfg.censMsg &&
-                      subj.find(iom.post.message).text().search(db.cfg.censMsg) != -1) {
-                     censf = true
-                  }
-                  if (db.cfg.censTotal &&
-                      subj.text().search(db.cfg.censTotal) != -1) {
-                     censf = true
-                  }
-                  if(censf) {
-                     db.filtered[pid]=1
-                  }
-               }*/
-					if (db.cens) {
-						if (subj.html().match(db.cens))
-							 db.filtered[pid]=1
+					if (db.cens && !db.filtered[tid]) {
+						if (subj.html().match(db.cens)) {
+							if (db.cfg.hideOpEqThrd && pid.replace('p','') == tid.replace('t',''))
+								db.filtered[tid]=1
+							else
+								db.filtered[pid]=1
+						}
 					}
                if (db.cfg.fwdRefs && $.references[pid]) {
                   var refs =

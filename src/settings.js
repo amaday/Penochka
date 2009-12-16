@@ -118,6 +118,7 @@ var db = {
          this.s ('censMail', 'E-mail (sage)', 'cens', '');
          this.s ('censMsg', 'Текст сообщения', 'cens', ''); */
       this.s ('censTotal', 'Любое место сообщения', 'cens', '');
+		this.s ('hideOpEqThrd', 'Отфильтрованное оп-сообщение фильтрует тред', 'cens', false);
       this.s ('censPage', 'Элементы страницы', 'cens', 'a:last, div.logo img, center hr, center a[target], center br');
       /* this.s ('censHeight', 'Высота сообщения превышает', 'cens', 0); */
 
@@ -141,7 +142,7 @@ var db = {
       this.s ('prvwMinWidth', 'Минимальная ширина превью сообщения', 'ftune', 450);
       this.s ('prvwMinDelta', 'Дельта ширины превью сообщения', 'ftune', 200);
       this.s ('thrdInThrdLeave', 'Не скрывать тред, когда заходишь в него', 'ftune', false);
-      this.s ('thrdMenuDouble', 'Дублировать меня треда внизу треда', 'ftune', true);
+      this.s ('thrdMenuDouble', 'Дублировать меню треда внизу треда', 'ftune', true);
       this.s ('bmPreview', 'Показывать превью тредов в закладках', 'ftune', false);
       this.s ('clearTt', 'Очищать поле ввода капчи при ошибке или обновлении', 'ftune', true);
 

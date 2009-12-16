@@ -139,7 +139,7 @@ iom = {
    }
 }
 
-function dvach (onload, events) {
+function dvach (onload) {
    function parse (cloned) {
       var opPost = $('<span></span>');
       var currThread = $('<span></span>');
