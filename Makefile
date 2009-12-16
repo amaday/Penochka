@@ -29,5 +29,5 @@ clean:
 	rm -f penochka.js
 
 update:
-	git push github3 master
-	git push github3 govno
+	git push github master
+	git push github govno
