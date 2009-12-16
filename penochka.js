@@ -1,6 +1,6 @@
 // ==UserScript== 
 // @name           Govno 3 aka penochka
-// @version        0.6.37
+// @version        0.6.38
 // @description    Penochka imgboard script.
 // @include        http://2-ch.ru/*
 // @include        http://*.2-ch.ru/* 
@@ -2718,7 +2718,8 @@ apply_me = function (messages, isSecondary) {
    for (var objId in db.filtered) {
       var subj = messages.find('#'+objId)
       subj.css('display', 'none')
-      chktizer(subj, objId, false, false, true)
+		alert(objId+' '+objId.search('p')==-1)
+      chktizer(subj, objId, objId.search('p')==-1, false, true)
       messages.find('#tiz'+objId).css('display','block')
    }
 }
@@ -2736,7 +2737,7 @@ function postSetup () {
    setTimeout(function() {
       scope.timer.diff('async queue');
       $('p.footer a:last').
-         after(' + <a href="http://github.com/anonymous32767/Penochka/" title="' + scope.timer.cache + ' total: ' + scope.timer.total + 'ms">penochka 0.6.37</a>')
+         after(' + <a href="http://github.com/anonymous32767/Penochka/" title="' + scope.timer.cache + ' total: ' + scope.timer.total + 'ms">penochka 0.6.38</a>')
    },0);
 }
 
