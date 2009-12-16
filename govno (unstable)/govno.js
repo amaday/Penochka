@@ -1,6 +1,6 @@
 // ==UserScript== 
 // @name           Govno 3 aka govno
-// @version        3.0.8.33
+// @version        3.0.8.34
 // @description    Penochka imgboard script.
 // @include        http://2-ch.ru/*
 // @include        http://*.2-ch.ru/* 
@@ -1159,7 +1159,7 @@ iom = {
    }
 }
 
-function dvach (onload, events) {
+function dvach (onload) {
    function parse (cloned) {
       var opPost = $('<span></span>');
       var currThread = $('<span></span>');
@@ -1545,6 +1545,7 @@ var db = {
          this.s ('censMail', 'E-mail (sage)', 'cens', '');
          this.s ('censMsg', 'Текст сообщения', 'cens', ''); */
       this.s ('censTotal', 'Любое место сообщения', 'cens', '');
+		this.s ('hideOpEqThrd', 'Отфильтрованное оп-сообщение фильтрует тред', 'cens', false);
       this.s ('censPage', 'Элементы страницы', 'cens', 'a:last, div.logo img, center hr, center a[target], center br');
       /* this.s ('censHeight', 'Высота сообщения превышает', 'cens', 0); */
 
@@ -1568,7 +1569,7 @@ var db = {
       this.s ('prvwMinWidth', 'Минимальная ширина превью сообщения', 'ftune', 450);
       this.s ('prvwMinDelta', 'Дельта ширины превью сообщения', 'ftune', 200);
       this.s ('thrdInThrdLeave', 'Не скрывать тред, когда заходишь в него', 'ftune', false);
-      this.s ('thrdMenuDouble', 'Дублировать меня треда внизу треда', 'ftune', true);
+      this.s ('thrdMenuDouble', 'Дублировать меню треда внизу треда', 'ftune', true);
       this.s ('bmPreview', 'Показывать превью тредов в закладках', 'ftune', false);
       this.s ('clearTt', 'Очищать поле ввода капчи при ошибке или обновлении', 'ftune', true);
 
@@ -2671,35 +2672,13 @@ apply_me = function (messages, isSecondary) {
                   ], ' ', ''))
                }
                /* Censore */
-               /* if(db.cfg.censTitle != '' || db.cfg.censUser != '' || db.cfg.censMail != '' || db.cfg.censMsg != '' || db.cfg.censTotal != '' || db.cfg.censHeight) {
-                  var censf = false;
-                  if (db.cfg.censTitle &&
-                      subj.find(iom.post.title).text().search(db.cfg.censTitle) != -1) {
-                     censf = true
-                  }
-                  if (db.cfg.censUser &&
-                      subj.find(iom.post.poster).text().search(db.cfg.censTitle) != -1) {
-                     censf = true
-                  }
-                  if (db.cfg.censMail &&
-                      subj.find(iom.post.email).length > 0 && subj.find(iom.post.email).attr('href').search(db.cfg.censMail) != -1) {
-                     censf = true
-                  }
-                  if (db.cfg.censMsg &&
-                      subj.find(iom.post.message).text().search(db.cfg.censMsg) != -1) {
-                     censf = true
-                  }
-                  if (db.cfg.censTotal &&
-                      subj.text().search(db.cfg.censTotal) != -1) {
-                     censf = true
-                  }
-                  if(censf) {
-                     db.filtered[pid]=1
-                  }
-               }*/
-					if (db.cens) {
-						if (subj.html().match(db.cens))
-							 db.filtered[pid]=1
+					if (db.cens && !db.filtered[tid]) {
+						if (subj.html().match(db.cens)) {
+							if (db.cfg.hideOpEqThrd && pid.replace('p','') == tid.replace('t',''))
+								db.filtered[tid]=1
+							else
+								db.filtered[pid]=1
+						}
 					}
                if (db.cfg.fwdRefs && $.references[pid]) {
                   var refs =
@@ -2757,7 +2736,7 @@ function postSetup () {
    setTimeout(function() {
       scope.timer.diff('async queue');
       $('p.footer a:last').
-         after(' + <a href="http://github.com/anonymous32767/Penochka/" title="' + scope.timer.cache + ' total: ' + scope.timer.total + 'ms">govno 3.0.8.33</a>')
+         after(' + <a href="http://github.com/anonymous32767/Penochka/" title="' + scope.timer.cache + ' total: ' + scope.timer.total + 'ms">govno 3.0.8.34</a>')
    },0);
 }
 

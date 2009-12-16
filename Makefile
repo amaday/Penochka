@@ -15,7 +15,7 @@ unstable:
 	mv tmp1 govno_unstable.xml
 	sed -e "s/\"version\": \"[0-9\.]\+\"/\"version\": \"$(v)\"/g" govno\ \(unstable\)/manifest.json > tmp1
 	mv tmp1 govno\ \(unstable\)/manifest.json
-	chrome --pack-extension="P:\govno (unstable)" --pack-extension-key=P:\govno.pem --no-message-box
+	chromium-browser --pack-extension="./govno (unstable)" --pack-extension-key=./govno.pem --no-message-box
 	git commit -a -m "Build $(v)"
 
 govno:
