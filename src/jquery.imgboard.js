@@ -253,7 +253,7 @@ function dvach (onload) {
          var e = $('<span/>')
          e.load(
             'http://'+location.host + url + ' #delform',
-            {},
+            "",
             function (a,b,c) {
                if (b != 'success') {
                   if (ef)
