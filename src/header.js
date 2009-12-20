@@ -2,8 +2,11 @@
 // @name           Govno 3 aka penochka
 // @version        UnStAbLe
 // @description    Penochka imgboard script.
+// @include        http://iichan.ru/*
 // @include        http://*.iichan.ru/*
+// @include        http://02ch.su/*
 // @include        http://*.02ch.su/*
+// @include        http://2-ch.ru/* 
 // @include        http://*.2-ch.ru/* 
 // @exclude        */src/* 
 // @run-at         document-start
