@@ -6,11 +6,15 @@
 	"permissions": [
 		"tabs",
 		"http://2-ch.ru/*",
-		"http://*.2-ch.ru/*"
+		"http://*.2-ch.ru/*",
+		"http://02ch.su/*",
+		"http://*.02ch.su/*",
+		"http://iichan.ru/*",
+		"http://*.iichan.ru/*"
 	],
 	"content_scripts": [
 		{
-			"matches": ["http://2-ch.ru/*", "http://*.2-ch.ru/*"],
+			"matches": ["http://2-ch.ru/*", "http://*.2-ch.ru/*", "http://*.02ch.su/*", "http://02ch.su/*", "http://*.iichan.ru/*", "http://iichan.ru/*"],
 			"run_at": "document_start",
 			"js": ["govno.js"]
 		}
