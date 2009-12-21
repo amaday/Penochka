@@ -19,11 +19,11 @@ unstable:    $(wildcard src\*.js)
 	mv src/penochka.js tmp
 	mv src/make.bat build.bat
 	sed -e "s/UnStAbLe/$(v)/g" tmp > $(target)
-	git commit -a -m "Build $(v)"
+	git commit -a
 	git checkout govno
 	make unstable
 	git checkout master
-	
+
 clean:
 	cd src; make clean
 	rm -f penochka.js
