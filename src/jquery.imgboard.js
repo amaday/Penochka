@@ -238,14 +238,15 @@ function dvach (onload) {
          var turingTest = form.find(iom.form.turimage)
          if (turingTest.length == 0)
             turingTest = form.find('#captchadiv img')
-
-         turingTest.attr(
-            'src',
-            turingTest.attr('src').
-               replace(/key=\S*&/, "key=res" + tnum + "&").
-               replace(/dummy=\S*/, "dummy=" + lnum)
-         )
-         turingTest.click()
+			if (turingText != 0) {
+				turingTest.attr(
+					'src',
+					turingTest.attr('src').
+						replace(/key=\S*&/, "key=res" + tnum + "&").
+						replace(/dummy=\S*/, "dummy=" + lnum)
+				)
+				turingTest.click()
+			}
          return form
       },
       ajaxThread:
