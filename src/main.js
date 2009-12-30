@@ -100,18 +100,18 @@ function cacheThread(idurl, cb, errHandler) {
       cb()
       return
    }
-   $.fn.ajaxThread(
+	$.fn.ajaxThread(
       url,
       function(e) {
          /* Chrome extension specific javascript behaviour
             workaround */
-         dvach(function () {})
+         // dvach(function () {})
          /* End of workaround */
          e.find(iom.thread.reflink).attr('href', url)
          apply_me(e, true)
          var ue = e.find(iom.tid)
          var id = ue.attr('id')
-         ue.appendTo('#cache')
+         ue.appendTo($.cache)
          ue.attr('id', 'fold'+id)
          if (moar) {
             moar.show()
@@ -234,8 +234,8 @@ function intelli(x, y, id, url, threadCached, ff) {
    ist = setTimeout(
       function () {
          $('#is'+id).remove()
-         var obj = {}
-         if($('#'+id).length == 0) {
+			var obj = $.ui.preview(id, x, y)
+         if(obj.length == 0) {
             if (!threadCached && url) {
                cacheThread(url,
                            function () { intelli(x, y, id, null, true) },
@@ -250,8 +250,6 @@ function intelli(x, y, id, url, threadCached, ff) {
                if (ff)
                   ff()
             }
-         } else {
-            obj = $.ui.preview(id, x, y)
          }
          obj.attr('id','is'+id);
          obj.addClass('penISense')
@@ -332,7 +330,7 @@ function apply_refs(a, body) {
       var tiz = $.ui.tizer('Refs'+pid, refs(), false)
       apply_isense(tiz.find('a'))
       tiz.css('display', 'block')
-      tiz.append('#cache')
+      tiz.append($.cache)
    }
 }
 
@@ -894,8 +892,8 @@ function setupEnv (db, env) {
                         }
                      })
                      var replacer = $('<span/>').
-                     append($('#cache #'+pid+' '+iom.post.backrefsBlock).clone(true)).
-                     append($('#cache #'+pid+' '+iom.post.message).clone(true))
+                     append($.cache.find('#'+pid+' '+iom.post.backrefsBlock).clone(true)).
+                     append($.cache.find('#'+pid+' '+iom.post.message).clone(true))
                   replacee.replaceWith(replacer)
                })
                return false

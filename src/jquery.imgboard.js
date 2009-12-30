@@ -278,6 +278,7 @@ function dvach (onload) {
       }
    });
 
+	jQuery.cache = $('<span />')
    jQuery.xlatb = xlatb;
    jQuery.bookmarks = [];
 
@@ -295,6 +296,8 @@ function dvach (onload) {
       function (idobj, x, y) {
          if (typeof idobj == 'string') {
             var obj = $('#'+idobj).clone(true)
+				if (obj.length == 0)
+					obj = $.cache.find('#'+idobj).clone(true)
          } else {
             var obj = idobj
          }
@@ -371,7 +374,6 @@ function dvach (onload) {
 
       parse(cloned);
       process(cloned);
-      $('body').append('<div id="cache" style="display:none" />')
       f(cloned)
       threadsRaw.replaceWith(cloned);
       aft()
@@ -384,7 +386,7 @@ jQuery.fn.extend({
    },
    ok: function(db, env, msg, aft) {
       /* Защита от повторного вызова скрипта. */
-      if($('#cache').length > 0)
+      if($(iom.tid).length > 0)
          return
 
       try {
