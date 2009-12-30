@@ -1,6 +1,6 @@
 // ==UserScript== 
 // @name           Govno 3 aka govno
-// @version        3.0.8.62
+// @version        3.0.8.63
 // @description    Penochka imgboard script.
 // @include        http://iichan.ru/*
 // @include        http://*.iichan.ru/*
@@ -1806,7 +1806,8 @@ function cacheThread(idurl, cb, errHandler) {
       function(e) {
          /* Chrome extension specific javascript behaviour
             workaround */
-         // dvach(function () {})
+			if (!$.ui)
+				dvach(function () {})
          /* End of workaround */
          e.find(iom.thread.reflink).attr('href', url)
          apply_me(e, true)
@@ -2741,7 +2742,7 @@ function postSetup () {
    setTimeout(function() {
       scope.timer.diff('async queue');
       $('p.footer a:last').
-         after(' + <a href="http://github.com/anonymous32767/Penochka/" title="' + scope.timer.cache + ' total: ' + scope.timer.total + 'ms">govno 3.0.8.62</a>')
+         after(' + <a href="http://github.com/anonymous32767/Penochka/" title="' + scope.timer.cache + ' total: ' + scope.timer.total + 'ms">govno 3.0.8.63</a>')
    },0);
 }
 
