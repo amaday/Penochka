@@ -105,7 +105,8 @@ function cacheThread(idurl, cb, errHandler) {
       function(e) {
          /* Chrome extension specific javascript behaviour
             workaround */
-         // dvach(function () {})
+			if (!$.ui)
+				dvach(function () {})
          /* End of workaround */
          e.find(iom.thread.reflink).attr('href', url)
          apply_me(e, true)
