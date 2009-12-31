@@ -32,7 +32,7 @@
  */
 
 jQuery.fn.swap = function(b){
-   b = jQuery(b)[0];
+   b = jQuery(b)[0]
    var a = this[0];
    var t = a.parentNode.insertBefore(document.createTextNode(''), a);
    b.parentNode.insertBefore(a, b);
@@ -113,7 +113,6 @@ function cacheThread(idurl, cb, errHandler) {
          var ue = e.find(iom.tid)
          var id = ue.attr('id')
          ue.appendTo($.cache)
-         ue.attr('id', 'fold'+id)
          if (moar) {
             moar.show()
             o.find('span.penLoadMoar').remove()
@@ -124,18 +123,11 @@ function cacheThread(idurl, cb, errHandler) {
 }
 
 function toggleThread(id, useAjax) {
-   var swapid =
-      function (o1, o2) {
-         var t = o1.attr('id')
-         o1.attr('id', o2.attr('id'))
-         o2.attr('id', t)
-      }
-   if(($('#fold'+id).length == 0)) {
+   if($.cache.find('#'+id).length == 0) {
       if (useAjax)
          cacheThread(id, function () { toggleThread(id, false) })
    } else {
-      $('#'+id).swap('#fold'+id)
-      swapid($('#'+id), $('#fold'+id))
+      $.cache.find('#'+id).swap($('#'+id))
    }
 }
 
@@ -719,10 +711,8 @@ function setupEnv (db, env) {
          return false
       }
    })
-
-   if(env.find(iom.form.status).length == 0) {
-      env.find(iom.form.email).after('<i></i>')
-   }
+	
+	env.find(iom.postform).tuneForThread('')
 
    var img = env.find(iom.form.turimage)
 
@@ -791,15 +781,20 @@ function setupEnv (db, env) {
    }
 
    if (db.cfg.sageBtn) {
-      env.find(iom.form.email).after(
-         $.ui.multiLink([
-            [i18n.btns.sage,
-             function () { sage() }]
-         ], i18n.btns.begin, i18n.btns.end, i18n.btns.sep)
+		if (db.cfg.hideEmail) {
+			sagePh = iom.form.buttons
+		} else {
+			sagePh = iom.form.email
+		}
+		env.find(sagePh).after(
+			$.ui.multiLink([
+				[i18n.btns.sage,
+				 function () { sage() }]
+			], i18n.btns.begin, i18n.btns.end, i18n.btns.sep)
       )}
 
    if (db.cfg.fmtBtns) {
-      env.find(iom.postform + ' ' + iom.form.submit).after(
+      env.find(iom.postform + ' ' + iom.form.buttons).prepend(
          $.ui.multiLink([
             [i18n.btns.capsBold, function () {
                withSelection(
@@ -811,7 +806,7 @@ function setupEnv (db, env) {
                   function (s) { return '%%'+s+'%%' }) }]
          ], i18n.btns.begin, i18n.btns.end, i18n.btns.sep))
 
-      env.find(iom.postform + ' ' + iom.form.submit).after(
+      env.find(iom.postform + ' ' + iom.form.buttons).prepend(
          $.ui.multiLink([
             [i18n.btns.bold, function () {
                withSelection(

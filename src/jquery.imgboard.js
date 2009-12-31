@@ -46,16 +46,6 @@ function addStyle( css ) {
    return style;
 }
 
-/* Some useful stuff */
-jQuery.fn.extend({
-   /* Finds element parent which has class passed in argument. */
-   findc:
-   function(cls) {
-      return $(this).is(cls) ? $(this) : $(this).parents(cls)
-   }
-})
-
-/* */
 /*
   For localization to your language simply replace this table.
 */
@@ -123,9 +113,11 @@ iom = {
       turimage: '#imgcaptcha, img.captchaTwin',
       turdiv: '#captchadiv',
       password: 'input[name=password]',
+		moveto: '#trgetback',
       parent: 'input[name=parent]',
       submit: 'input[type=submit]',
-      status: 'i:first'
+      status: '#formStatus',
+		buttons: '#formButtons'
    },
    anchors: 'blockquote a[onclick]',
    menu: 'div.adminbar:first a:last',
@@ -192,7 +184,7 @@ function dvach (onload) {
                refid = subj.attr('href').split('.')[0].split('/').reverse()[0]
             }
             var pid = 'p' + refid
-            var spid = subj.findc(iom.pid).attr('id')
+            var spid = subj.closest(iom.pid).attr('id')
             subj.attr('refid', pid)
             subj.attr('refurl', refurl)
             try {
@@ -221,20 +213,37 @@ function dvach (onload) {
    jQuery.fn.extend({
       tuneForm:
       function () {
-         $(this).find('div.rules').remove()
-         return $(this)
+			var subj = $(this)
+			if (db.cfg.hideRules)
+				subj.find('div.rules').remove()
+			if (db.cfg.hideTitle)
+				subj.find(iom.form.title).closest('tr').hide()
+			if (db.cfg.hideUser) {
+				subj.find(iom.form.user).closest('tr').hide()
+				subj.find(iom.form.file).after(subj.find(iom.form.submit)).after(' ')
+			}
+			if (db.cfg.hideEmail)
+				subj.find(iom.form.email).closest('tr').hide()
+			if (db.cfg.hideGoto)
+				subj.find(iom.form.moveto).closest('tr').hide()
+			if (db.cfg.hidePasswd)
+				subj.find(iom.form.password).closest('tr').hide()
+			subj.find(iom.form.submit).after('<i id="formStatus"></i>')
+			subj.find(iom.form.message).before('<span id="formButtons"></span><br />')
+         return subj
       },
       tuneForThread:
       function (tid) {
          var tnum = tid.replace('t','')
          var form = $(this)
-         var lnum = $('#' + tid + ' ' + iom.thread.eot).findc(iom.pid).attr('id').replace('p','')
+         var lnum = Math.floor(Math.random() * 1000).toString()
          /* Reserved: manually switch to thread gb2
 
             form.find('input[name=gb2][value=board]').removeAttr('checked')
             form.find('input[name=gb2][value=thread]').attr('checked','checked') */
          form.tuneForm()
-         form.prepend('<input type="hidden" name="parent" value="' + tnum + '" />')
+			if (tnum)
+				form.prepend('<input type="hidden" name="parent" value="' + tnum + '" />')
          var turingTest = form.find(iom.form.turimage)
          if (turingTest.length == 0)
             turingTest = form.find('#captchadiv img')
@@ -242,7 +251,7 @@ function dvach (onload) {
 				turingTest.attr(
 					'src',
 					turingTest.attr('src').
-						replace(/key=\S*&/, "key=res" + tnum + "&").
+						replace(/key=\S*&/, (tnum ? "key=res" + tnum: "key=") + "&").
 						replace(/dummy=\S*/, "dummy=" + lnum)
 				)
 				turingTest.click()

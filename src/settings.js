@@ -103,6 +103,13 @@ var db = {
       this.s ('sageBtn', 'Кнопка сажи', 'form', true);
       this.s ('fmtBtns', 'Кнопки форматирования', 'form', true);
       this.s ('tripleTt', 'Троировать капчу', 'form', false);
+		this.s ('formHiding', 'Скрытие частей формы', 'form');
+		this.s ('hideTitle', 'Заголовок', 'formHiding', false);
+		this.s ('hideEmail', 'E-mail', 'formHiding', false);
+		this.s ('hideUser', 'Имя', 'formHiding', false);
+		this.s ('hidePasswd', 'Пароль', 'formHiding', false);
+		this.s ('hideGoto', 'Перейти к', 'formHiding', false);
+		this.s ('hideRules', 'Правила', 'formHiding', true);
 
       this.s ('sageMan', 'Я &#8212; человек-<b>САЖА</b>', 'sage', false);
       this.s ('sageInAllFields', 'Сажа идет во все поля', 'sage', false);
