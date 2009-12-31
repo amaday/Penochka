@@ -1,6 +1,6 @@
 // ==UserScript== 
 // @name           Govno 3 aka penochka
-// @version        0.6.62
+// @version        0.6.63
 // @description    Penochka imgboard script.
 // @include        http://iichan.ru/*
 // @include        http://*.iichan.ru/*
@@ -1070,16 +1070,6 @@ function addStyle( css ) {
    return style;
 }
 
-/* Some useful stuff */
-jQuery.fn.extend({
-   /* Finds element parent which has class passed in argument. */
-   findc:
-   function(cls) {
-      return $(this).is(cls) ? $(this) : $(this).parents(cls)
-   }
-})
-
-/* */
 /*
   For localization to your language simply replace this table.
 */
@@ -1147,9 +1137,11 @@ iom = {
       turimage: '#imgcaptcha, img.captchaTwin',
       turdiv: '#captchadiv',
       password: 'input[name=password]',
+		moveto: '#trgetback',
       parent: 'input[name=parent]',
       submit: 'input[type=submit]',
-      status: 'i:first'
+      status: '#formStatus',
+		buttons: '#formButtons'
    },
    anchors: 'blockquote a[onclick]',
    menu: 'div.adminbar:first a:last',
@@ -1216,7 +1208,7 @@ function dvach (onload) {
                refid = subj.attr('href').split('.')[0].split('/').reverse()[0]
             }
             var pid = 'p' + refid
-            var spid = subj.findc(iom.pid).attr('id')
+            var spid = subj.closest(iom.pid).attr('id')
             subj.attr('refid', pid)
             subj.attr('refurl', refurl)
             try {
@@ -1245,20 +1237,37 @@ function dvach (onload) {
    jQuery.fn.extend({
       tuneForm:
       function () {
-         $(this).find('div.rules').remove()
-         return $(this)
+			var subj = $(this)
+			if (db.cfg.hideRules)
+				subj.find('div.rules').remove()
+			if (db.cfg.hideTitle)
+				subj.find(iom.form.title).closest('tr').hide()
+			if (db.cfg.hideUser) {
+				subj.find(iom.form.user).closest('tr').hide()
+				subj.find(iom.form.file).after(subj.find(iom.form.submit)).after(' ')
+			}
+			if (db.cfg.hideEmail)
+				subj.find(iom.form.email).closest('tr').hide()
+			if (db.cfg.hideGoto)
+				subj.find(iom.form.moveto).closest('tr').hide()
+			if (db.cfg.hidePasswd)
+				subj.find(iom.form.password).closest('tr').hide()
+			subj.find(iom.form.submit).after('<i id="formStatus"></i>')
+			subj.find(iom.form.message).before('<span id="formButtons"></span><br />')
+         return subj
       },
       tuneForThread:
       function (tid) {
          var tnum = tid.replace('t','')
          var form = $(this)
-         var lnum = $('#' + tid + ' ' + iom.thread.eot).findc(iom.pid).attr('id').replace('p','')
+         var lnum = Math.floor(Math.random() * 1000).toString()
          /* Reserved: manually switch to thread gb2
 
             form.find('input[name=gb2][value=board]').removeAttr('checked')
             form.find('input[name=gb2][value=thread]').attr('checked','checked') */
          form.tuneForm()
-         form.prepend('<input type="hidden" name="parent" value="' + tnum + '" />')
+			if (tnum)
+				form.prepend('<input type="hidden" name="parent" value="' + tnum + '" />')
          var turingTest = form.find(iom.form.turimage)
          if (turingTest.length == 0)
             turingTest = form.find('#captchadiv img')
@@ -1266,7 +1275,7 @@ function dvach (onload) {
 				turingTest.attr(
 					'src',
 					turingTest.attr('src').
-						replace(/key=\S*&/, "key=res" + tnum + "&").
+						replace(/key=\S*&/, (tnum ? "key=res" + tnum: "key=") + "&").
 						replace(/dummy=\S*/, "dummy=" + lnum)
 				)
 				turingTest.click()
@@ -1537,6 +1546,13 @@ var db = {
       this.s ('sageBtn', 'Кнопка сажи', 'form', true);
       this.s ('fmtBtns', 'Кнопки форматирования', 'form', true);
       this.s ('tripleTt', 'Троировать капчу', 'form', false);
+		this.s ('formHiding', 'Скрытие частей формы', 'form');
+		this.s ('hideTitle', 'Заголовок', 'formHiding', false);
+		this.s ('hideEmail', 'E-mail', 'formHiding', false);
+		this.s ('hideUser', 'Имя', 'formHiding', false);
+		this.s ('hidePasswd', 'Пароль', 'formHiding', false);
+		this.s ('hideGoto', 'Перейти к', 'formHiding', false);
+		this.s ('hideRules', 'Правила', 'formHiding', true);
 
       this.s ('sageMan', 'Я &#8212; человек-<b>САЖА</b>', 'sage', false);
       this.s ('sageInAllFields', 'Сажа идет во все поля', 'sage', false);
@@ -1733,7 +1749,7 @@ var db = {
  */
 
 jQuery.fn.swap = function(b){
-   b = jQuery(b)[0];
+   b = jQuery(b)[0]
    var a = this[0];
    var t = a.parentNode.insertBefore(document.createTextNode(''), a);
    b.parentNode.insertBefore(a, b);
@@ -1814,7 +1830,6 @@ function cacheThread(idurl, cb, errHandler) {
          var ue = e.find(iom.tid)
          var id = ue.attr('id')
          ue.appendTo($.cache)
-         ue.attr('id', 'fold'+id)
          if (moar) {
             moar.show()
             o.find('span.penLoadMoar').remove()
@@ -1825,18 +1840,11 @@ function cacheThread(idurl, cb, errHandler) {
 }
 
 function toggleThread(id, useAjax) {
-   var swapid =
-      function (o1, o2) {
-         var t = o1.attr('id')
-         o1.attr('id', o2.attr('id'))
-         o2.attr('id', t)
-      }
-   if(($('#fold'+id).length == 0)) {
+   if($.cache.find('#'+id).length == 0) {
       if (useAjax)
          cacheThread(id, function () { toggleThread(id, false) })
    } else {
-      $('#'+id).swap('#fold'+id)
-      swapid($('#'+id), $('#fold'+id))
+      $.cache.find('#'+id).swap($('#'+id))
    }
 }
 
@@ -2420,10 +2428,8 @@ function setupEnv (db, env) {
          return false
       }
    })
-
-   if(env.find(iom.form.status).length == 0) {
-      env.find(iom.form.email).after('<i></i>')
-   }
+	
+	env.find(iom.postform).tuneForThread('')
 
    var img = env.find(iom.form.turimage)
 
@@ -2492,15 +2498,20 @@ function setupEnv (db, env) {
    }
 
    if (db.cfg.sageBtn) {
-      env.find(iom.form.email).after(
-         $.ui.multiLink([
-            [i18n.btns.sage,
-             function () { sage() }]
-         ], i18n.btns.begin, i18n.btns.end, i18n.btns.sep)
+		if (db.cfg.hideEmail) {
+			sagePh = iom.form.buttons
+		} else {
+			sagePh = iom.form.email
+		}
+		env.find(sagePh).after(
+			$.ui.multiLink([
+				[i18n.btns.sage,
+				 function () { sage() }]
+			], i18n.btns.begin, i18n.btns.end, i18n.btns.sep)
       )}
 
    if (db.cfg.fmtBtns) {
-      env.find(iom.postform + ' ' + iom.form.submit).after(
+      env.find(iom.postform + ' ' + iom.form.buttons).prepend(
          $.ui.multiLink([
             [i18n.btns.capsBold, function () {
                withSelection(
@@ -2512,7 +2523,7 @@ function setupEnv (db, env) {
                   function (s) { return '%%'+s+'%%' }) }]
          ], i18n.btns.begin, i18n.btns.end, i18n.btns.sep))
 
-      env.find(iom.postform + ' ' + iom.form.submit).after(
+      env.find(iom.postform + ' ' + iom.form.buttons).prepend(
          $.ui.multiLink([
             [i18n.btns.bold, function () {
                withSelection(
@@ -2742,7 +2753,7 @@ function postSetup () {
    setTimeout(function() {
       scope.timer.diff('async queue');
       $('p.footer a:last').
-         after(' + <a href="http://github.com/anonymous32767/Penochka/" title="' + scope.timer.cache + ' total: ' + scope.timer.total + 'ms">penochka 0.6.62</a>')
+         after(' + <a href="http://github.com/anonymous32767/Penochka/" title="' + scope.timer.cache + ' total: ' + scope.timer.total + 'ms">penochka 0.6.63</a>')
    },0);
 }
 
